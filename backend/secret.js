@@ -1,0 +1,1 @@
+export const mongoUri = 'mongodb+srv://master-user:tua6V9ReJw3Bi1PM@mongodbcluster.e9l9m.mongodb.net/Test?retryWrites=true&w=majority';
