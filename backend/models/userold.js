@@ -3,10 +3,13 @@ import mongoose from 'mongoose'
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  name: String,
-  role: Number,   //1 = lecturer, 2 = student, 99 = admin
-  email: String,
-  passwordHash: String,
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+    minlength: 3
+  },
 }, {
   timestamps: true,
 });
