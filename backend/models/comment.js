@@ -4,13 +4,11 @@ const Schema = mongoose.Schema;
 
 const commentSchema = new Schema(
   {
-    name: String,
     commentType: Boolean, //true = summative, false = formative
     studentId: { type: Schema.Types.ObjectId, ref: "User" },
+    postedBy: { type: Schema.Types.ObjectId, ref: "User" },
     body: String,
-  },
-  {
-    timestamps: true,
+    datePosted: Date,
   }
 );
 

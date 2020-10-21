@@ -9,9 +9,6 @@ const componentSchema = new Schema(
     weightage: Number,
     subcomponents: [{ type: Schema.Types.ObjectId, ref: "SubComponent" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-  },
-  {
-    timestamps: true,
   }
 );
 

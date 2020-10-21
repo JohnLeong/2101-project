@@ -7,10 +7,8 @@ const moduleSchema = new Schema(
     name: String,
     description: String,
     components: [{ type: Schema.Types.ObjectId, ref: "Component" }],
-    classes: [{ type: Schema.Types.ObjectId, ref: "Class" }],
-  },
-  {
-    timestamps: true,
+    classes: [{ type: Schema.Types.ObjectId, ref: "ModuleClass" }],
+    users: [{ type: Schema.Types.ObjectId, ref: "User" }],
   }
 );
 

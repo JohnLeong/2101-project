@@ -2,17 +2,19 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const classSchema = new Schema(
+const moduleClassSchema = new Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      required: true,
+      //unique: true,
+    },
     students: [{ type: Schema.Types.ObjectId, ref: "User" }],
     lecturers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  },
-  {
-    timestamps: true,
+    moduleId: { type: Schema.Types.ObjectId, ref: "Module" },
   }
 );
 
-const Class = mongoose.model("Class", classSchema);
+const ModuleClass = mongoose.model("ModuleClass", moduleClassSchema);
 
-export default Class;
+export default ModuleClass;
