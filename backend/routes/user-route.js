@@ -12,12 +12,14 @@ router.route("/login").post((req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if (!email || !password) res.send("Invalid username or password");
+  if (!email || !password) {
+    res.status(400).json("Invalid username or password");
+  }
 
   User.findOne({ email: email })
     .then((user) => {
       if (user == null) {
-        res.send("Username or password incorrect");
+        res.status(400).json("Username or password incorrect");
       } else {
         //Check for correct password hash
         if (bcrypt.compareSync(password, user.passwordHash)) {
@@ -36,7 +38,7 @@ router.route("/login").post((req, res) => {
             accessToken,
           });
         } else {
-          res.send("Password incorrect");
+          res.status(400).json("Password incorrect");
         }
       }
     })

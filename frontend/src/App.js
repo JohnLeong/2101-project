@@ -4,6 +4,8 @@ import { ExamplePage } from "./Pages/ExamplePage";
 import { DefaultPage } from "./Pages/DefaultPage";
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { ExamplePage2 } from "./Pages/ExamplePage2";
+import { LoginPage } from "./Pages/LoginPage";
+import PrivateRoute from "./Components/PrivateRoute";
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
           <Route exact path="/" component={DefaultPage} />
           <Route path="/example" component={ExamplePage} />
           <Route path="/example2" component={ExamplePage2} />
+          <Route path="/login" component={LoginPage} />
+          <PrivateRoute path="/test" component={ExamplePage} roles={[1, 2]}/>
           {/* <Route component={NotFoundPage} /> */}
         </Switch>
       </div>
