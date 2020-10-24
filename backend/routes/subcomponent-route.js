@@ -73,12 +73,12 @@ router
   .all(authenticateJWT([1]))
   .put((req, res) => {
     Subcomponent.findById(req.params.id)
-      .then((Subcomponent) => {
-        Subcomponent.name = req.body.name ?? Subcomponent.name;
-        Subcomponent.weightage = req.body.weightage ?? Subcomponent.weightage;
-        Subcomponent.totalMarks = req.body.totalMarks ?? Subcomponent.totalMarks;
+      .then((subcomponent) => {
+        subcomponent.name = req.body.name ?? subcomponent.name;
+        subcomponent.weightage = req.body.weightage ?? subcomponent.weightage;
+        subcomponent.totalMarks = req.body.totalMarks ?? subcomponent.totalMarks;
 
-        Subcomponent
+        subcomponent
           .save()
           .then(() => res.json("Subcomponent updated!"))
           .catch((err) => res.status(400).json("Error: " + err));
@@ -90,15 +90,15 @@ router
 //Roles: Lecturer
 //Add subcomponent marks for group of students 
 //Input para: subcomponent id
-//Input json: maps{user(student)objectid: marks}
+//Input json: {"studentMarks":{user_studentObjectid: marks}}
 router
   .route("/new/studentmarks/:subcomponentId")
   .all(authenticateJWT([1]))
   .put((req, res) => {
     Subcomponent.findById(req.params.subcomponentId)
-        .then((Subcomponent) => {
+        .then((subcomponent) => {
             //student marks from db
-            const storedStudentMarks = Subcomponent.studentMarks;
+            const storedStudentMarks = subcomponent.studentMarks;
             var storedMap = new Map();
             
             //add to storedMap
@@ -112,17 +112,17 @@ router
             const studentMarks = req.body.studentMarks;            
             //add to storedMap
             if(studentMarks!=null){
-                for(var newValue in studentMarks){
-                    storedMap.set(newValue, studentMarks[newValue]);
+                for(var newKey in studentMarks){
+                    storedMap.set(newKey, studentMarks[newKey]);
                 }
             }
 
             //update to db
-            Subcomponent.studentMarks = storedMap ?? Subcomponent.studentMarks;
+            subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
-            Subcomponent
+            subcomponent
             .save()
-            .then(() => res.json("student Marks added!"))
+            .then(() => res.json("Student Marks added!"))
             .catch((err) => res.status(400).json("Error: " + err));
         })
         .catch((err) => res.status(400).json("Error: " + err));
@@ -134,15 +134,15 @@ router
 //Roles: Lecturer
 //add or edit subcomponent marks for group of students 
 //Input para: subcomponent id
-//Input json: maps{user(student)objectid: marks}
+//Input json: {"studentMarks":{user_studentObjectid: marks}}
 router
   .route("/edit/studentmarks/:subcomponentId")
   .all(authenticateJWT([1]))
   .put((req, res) => {
     Subcomponent.findById(req.params.subcomponentId)
-        .then((Subcomponent) => {
+        .then((subcomponent) => {
             //student marks from db
-            const storedStudentMarks = Subcomponent.studentMarks;
+            const storedStudentMarks = subcomponent.studentMarks;
             var storedMap = new Map();
             
             //add to storedMap
@@ -160,31 +160,31 @@ router
             const studentMarks = req.body.studentMarks;            
             //add to storedMap
             if(studentMarks!=null){
-                for(var newValue in studentMarks){
+                for(var newKey in studentMarks){
                     var boolFound = false;
                     //find key to change
                     storedStudentMarks.forEach(function(value,key){
-                        if(key == newValue) {
+                        if(key == newKey) {
                             console.log("keyIN = " + key);
                             console.log("old marks = " + value);
-                            console.log("new marks = " + studentMarks[newValue]);
-                            storedMap.set(key, studentMarks[newValue]);
+                            console.log("new marks = " + studentMarks[newKey]);
+                            storedMap.set(key, studentMarks[newKey]);
                             boolFound = true;
                         }
                     })
-                    //if not found, all
+                    //if not found, add into map
                     if(!boolFound){   
                         console.log("cannot find, insert to map");
-                        storedMap.set(newValue, studentMarks[newValue]);
-                        console.log(newValue + " added");
+                        storedMap.set(newKey, studentMarks[newKey]);
+                        console.log(newKey + " added");
                     }
                 }
             }
 
             //update to db
-            Subcomponent.studentMarks = storedMap ?? Subcomponent.studentMarks;
+            subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
-            Subcomponent
+            subcomponent
             .save()
             .then(() => res.json("student Marks updated!"))
             .catch((err) => res.status(400).json("Error: " + err));
