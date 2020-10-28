@@ -1,6 +1,9 @@
 import express from "express";
 import Module from "../models/module.js";
 import ModuleClass from "../models/class.js";
+import SubComponent from "../models/subcomponent.js";
+import Comment from "../models/comment.js";
+import Component from "../models/component.js";
 import User from "../models/user.js";
 import { authenticateJWT } from "../authentication.js";
 
@@ -20,6 +23,114 @@ router
         res.json(modules);
       })
       .catch((err) => res.status(400).json("Error: " + err));
+  });
+
+//Route: GET ...url.../module/student/<moduleId>
+//Roles: Student
+//Gets all components details in a module for a student
+router
+  .route("/student/:moduleId")
+  .all(authenticateJWT([2]))
+  .get(async (req, res) => {
+    try {
+      //Find module
+      const module = await Module.findById(req.params.moduleId).exec();
+
+      //Find class student is in
+      const moduleClass = await ModuleClass.findOne({
+        _id: { $in: module.classes },
+        students: req.user.userId,
+      }).exec();
+
+      //Find all components in the module
+      const components = await Component.find({
+        _id: { $in: module.components },
+      }).populate("subcomponents").exec();
+
+      //Inform user if there are no components
+      if (!components) {
+        res.json("No components in module");
+        return;
+      }
+
+      //Retrieve comments in the components for this student
+      var componentObjects = [];
+      for (var i = 0; i < components.length; ++i) {
+        const comments = await Comment.find({
+          _id: { $in: components[i].comments },
+          studentId: req.user.userId,
+        }).exec();
+
+        var summativeComments = [];
+        var formativeComments = [];
+
+        //Check comments and split into summative and formative based on commentType
+        comments.forEach((element) => {
+          if (element.commentType == true) {
+            summativeComments.push(element);
+          } else {
+            formativeComments.push(element);
+          }
+        });
+
+        //Get subcomponents in this component
+        const subComponents = components[i].subcomponents;
+
+        var classMarks = new Map();
+        moduleClass.students.forEach((studentId) => {
+          var totalMarks = 0;
+
+          //Add up all the subcomponent marks
+          subComponents.forEach((subcomponent) => {
+            const marks = subcomponent.studentMarks.get(studentId.toString());
+            if (typeof marks !== "undefined") {
+              totalMarks += marks * subcomponent.weightage;
+            }
+          });
+
+          //classMarks.set(totalMarks, [studentId.toString()]);
+          if (classMarks.has(totalMarks)) {
+            classMarks.get(totalMarks).push(studentId.toString());
+          } else {
+            classMarks.set(totalMarks, [studentId.toString()]);
+          }
+        });
+
+        var componentObject = components[i].toObject();
+
+        //Standing
+        var sortedArray =  [...classMarks].sort((a, b) => a[0] < b[0] ? 1 : -1);
+        const indexPosition = sortedArray.findIndex((item) => item[1].includes(req.user.userId));
+
+        if (indexPosition == -1){
+          componentObject.standingPercentile = 100;
+        } else {
+          componentObject.standingPercentile = ((indexPosition + 1) / sortedArray.length) * 100;
+        }
+
+        //Subcomponents
+        componentObject.subcomponents = [];
+        subComponents.forEach((subcomponent) => {
+          var subcomponentObject = subcomponent.toObject();
+          delete subcomponentObject.studentMarks;
+          subcomponentObject.marks = subcomponent.studentMarks.get(req.user.userId);
+          componentObject.subcomponents.push(subcomponentObject);
+        });
+
+        componentObject.summativeComments = summativeComments;
+        componentObject.formativeComments = formativeComments;
+        componentObject.numClassStudents = moduleClass.students.length;
+
+        delete componentObject.comments;
+
+        componentObjects.push(componentObject);
+      }
+
+      //Return components
+      res.json(componentObjects);
+    } catch (err) {
+      (err) => res.status(400).json("Error: " + err);
+    }
   });
 
 /* Stuff below is for testing and reference purposes */

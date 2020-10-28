@@ -65,7 +65,7 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
         for (int i = 0; i < component.SubComponents.Count; ++i)
         {
             SubComponent subComponent = component.SubComponents[i];
-            int subComponentHeight = (int)(((float)subComponent.Marks / subComponent.TotalMarks) * maxSubcomponentHeight);
+            int subComponentHeight = Mathf.Max(1, (int)(((float)subComponent.Marks / subComponent.TotalMarks) * maxSubcomponentHeight));
             hologramHeight += maxSubcomponentHeight - subComponentHeight;
 
             GameObject subComponentObject = new GameObject("Subcomponent: " + subComponent.Name);
@@ -173,7 +173,7 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
     {
         WWWForm form = new WWWForm();
 
-        using (UnityWebRequest www = UnityWebRequest.Get(Routes.getComponentUrl + GameManager.Instance.Module.Id))
+        using (UnityWebRequest www = UnityWebRequest.Get(Routes.getModuleDetailsUrl + GameManager.Instance.Module.Id))
         {
             www.SetRequestHeader("Authorization", GameManager.Instance.AccessToken);
             yield return www.SendWebRequest();
@@ -208,11 +208,15 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
                     }
 
                     //Read subcomponents
-                    subcomponents.Add(new SubComponent("testing", 30, 1, 100, 60));
-                    subcomponents.Add(new SubComponent("testing", 30, 1, 100, 60));
-                    subcomponents.Add(new SubComponent("testing", 40, 1, 100, 80));
+                    for (int j = 0; j < componentJson["subcomponents"].Count; ++j)
+                    {
+                        var subcomponent = componentJson["subcomponents"][j];
+                        subcomponents.Add(new SubComponent(subcomponent["name"], subcomponent["weightage"], 1, subcomponent["totalMarks"], !subcomponent.HasKey("marks") ? -1 : subcomponent["marks"].AsInt));
+                    }
+                    //subcomponents.Add(new SubComponent("testing", 30, 1, 100, 60));
+                    //subcomponents.Add(new SubComponent("testing", 30, 1, 100, 60));
+                    //subcomponents.Add(new SubComponent("testing", 40, 1, 100, 80));
 
-                    var test = componentJson["standingPercentile"];
 
                     components.Add(new ModuleComponent(componentJson["name"], componentJson["componentType"], componentJson["weightage"]
                         , componentJson["standingPercentile"], componentJson["numClassStudents"]
