@@ -97,6 +97,8 @@ router
   .put((req, res) => {
     Subcomponent.findById(req.params.subcomponentId)
         .then((subcomponent) => {
+            //max marks
+            const maxMarks = subcomponent.totalMarks;
             //student marks from db
             const storedStudentMarks = subcomponent.studentMarks;
             var storedMap = new Map();
@@ -108,21 +110,33 @@ router
                 })
             }
 
+            var errRecordCounter = 0;
             //new student marks map
             const studentMarks = req.body.studentMarks;            
             //add to storedMap
             if(studentMarks!=null){
                 for(var newKey in studentMarks){
-                    storedMap.set(newKey, studentMarks[newKey]);
+                    if(studentMarks[newKey] <= maxMarks && studentMarks[newKey] >=0){
+                        storedMap.set(newKey, studentMarks[newKey]);
+                    }
+                    else{
+                        ++errRecordCounter;
+                    }
                 }
             }
 
+            var msgSuccessful = "";
+            if(errRecordCounter>0){
+                msgSuccessful = errRecordCounter + " record(s) skipped. Students Marks added!";
+            }else{
+                msgSuccessful = "Student Marks added!";
+            }
             //update to db
             subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
             subcomponent
             .save()
-            .then(() => res.json("Student Marks added!"))
+            .then(() => res.json(msgSuccessful))
             .catch((err) => res.status(400).json("Error: " + err));
         })
         .catch((err) => res.status(400).json("Error: " + err));
@@ -199,6 +213,7 @@ router
             }
 
             console.log("emailIndex: "+ emailIndex +" marksIndex: "+ marksIndex);
+            var errRecordCounter = 0;
 
             //store into Dictionary
             var keyValue = {};
@@ -210,7 +225,7 @@ router
                 //invalid marks
                 if(currentValue > maxMarks){
                     console.log(currentKeyEmail+ " invalid marks");
-                    //TODO: err counter for invalid records
+                    ++errRecordCounter;
                     continue;
                 }
 
@@ -242,12 +257,18 @@ router
             console.log("KEYVALUE:");
             console.log(keyValue);
 
+            var msgSuccessful = "";
+            if(errRecordCounter>0){
+                msgSuccessful = errRecordCounter + " record(s) skipped. Import Successful";
+            }else{
+                msgSuccessful = "Import Successful";
+            }
             //update to db
             subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
             subcomponent
             .save()
-            .then(() => res.json("Import Successful"))
+            .then(() => res.json(msgSuccessful))
             .catch((err) => res.status(400).json("Error: " + err));
         })
         .catch((err) => res.status(400).json("Error: " + err));
@@ -264,6 +285,8 @@ router
   .put((req, res) => {
     Subcomponent.findById(req.params.subcomponentId)
         .then((subcomponent) => {
+            //max marks
+            const maxMarks = subcomponent.totalMarks;
             //student marks from db
             const storedStudentMarks = subcomponent.studentMarks;
             var storedMap = new Map();
@@ -279,11 +302,13 @@ router
                 return;
             }
 
+
             //new student marks map
             const studentMarks = req.body.studentMarks;            
             //add to storedMap
             if(studentMarks!=null){
                 for(var newKey in studentMarks){
+                    //TODO:add error handling
                     var boolFound = false;
                     //find key to change
                     storedStudentMarks.forEach(function(value,key){

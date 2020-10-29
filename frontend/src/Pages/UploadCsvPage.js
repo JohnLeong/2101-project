@@ -8,27 +8,27 @@ import "../App.css";
 export const UploadCsvPage = () => {
   const [submitting, setSubmitting] = useState(false);
 
+  //Source: https://masakudamatsu.medium.com/how-to-customize-the-file-upload-button-in-react-b3866a5973d8
   // Create a reference to the hidden file input element
   const hiddenFileInput = React.useRef(null);
 
-  // Programatically click the hidden file input element
-  // when the Button component is clicked
+  // programatically click hidden file input element
+  // when the Button is clicked
   const handleClick = event => {
     hiddenFileInput.current.click();
   };
 
-  // Call a function (passed as a prop from the parent component)
-  // to handle the user-selected file 
+  // handle the user-selected file 
   const handleChange = async (event) => {
+    // access to the file content
     let files = event.target.files;
+    // access to file data
     let dataOutput = null;
-    //console.warn("data file", files);
+
     Array.from(files)
       .filter((file) => file.type === "application/vnd.ms-excel" || file.type === "text/csv")
       .forEach(async (file) => {
         dataOutput = await file.text();
-        console.warn(dataOutput);
-        
         if (submitting === false) {
           setSubmitting(true);
           fetch(importMarksUrl + "5f8fc05aa7510740942b75fc", {
@@ -37,10 +37,11 @@ export const UploadCsvPage = () => {
               "Content-Type": "application/json",
             },
             // convert to JSON and send it as the PUT body
-            body: JSON.stringify({dataOutput}),
+            body: JSON.stringify({ dataOutput }),
           })
             .then((res) => {
               if (res.ok) {
+                //successful
                 return res.json();
               }
             })
