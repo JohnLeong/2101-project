@@ -173,7 +173,7 @@ router
                 return;
             }
 
-            //new student marks map
+            //new student marks
             const importMarks = req.body.dataOutput;   
             if(importMarks === null){
                 console.log("Invalid request: No JSON parsed");
@@ -213,17 +213,18 @@ router
             }
 
             console.log("emailIndex: "+ emailIndex +" marksIndex: "+ marksIndex);
-            var errRecordCounter = 0;
-
+            
             //store into Dictionary
             var keyValue = {};
+
+            var errRecordCounter = 0;
             //skip header row
             for (let index = 1; index < colSeparated.length; ++index) {
                 var currentKeyEmail = colSeparated[index][emailIndex];
                 var currentValue = colSeparated[index][marksIndex];
                 //check for invalid row
                 //invalid marks
-                if(currentValue > maxMarks){
+                if(currentValue > maxMarks || currentValue < 0){
                     console.log(currentKeyEmail+ " invalid marks");
                     ++errRecordCounter;
                     continue;
@@ -240,7 +241,7 @@ router
                 var boolFound = false;
                 //find key to change
                 storedStudentMarks.forEach(function(value,key){
-                    if(key == currentKeyEmail) {
+                    if(key === currentKeyEmail) {
                         //change value in key
                         storedMap.set(key, currentValue);
                         boolFound = true;
@@ -259,9 +260,9 @@ router
 
             var msgSuccessful = "";
             if(errRecordCounter>0){
-                msgSuccessful = errRecordCounter + " record(s) skipped. Import Successful";
+                msgSuccessful = errRecordCounter + " record(s) skipped. Import Successful!";
             }else{
-                msgSuccessful = "Import Successful";
+                msgSuccessful = "Import Successful!";
             }
             //update to db
             subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
@@ -302,17 +303,22 @@ router
                 return;
             }
 
-
+            var errRecordCounter = 0;
             //new student marks map
-            const studentMarks = req.body.studentMarks;            
+            const studentMarks = req.body.studentMarks;
+
             //add to storedMap
             if(studentMarks!=null){
                 for(var newKey in studentMarks){
-                    //TODO:add error handling
-                    var boolFound = false;
+                    if(studentMarks[newKey] > maxMarks || studentMarks[newKey] < 0){
+                        ++errRecordCounter;
+                        continue;
+                    }
+                    
                     //find key to change
+                    var boolFound = false;
                     storedStudentMarks.forEach(function(value,key){
-                        if(key == newKey) {
+                        if(key === newKey) {
                             console.log("keyIN = " + key);
                             console.log("old marks = " + value);
                             console.log("new marks = " + studentMarks[newKey]);
@@ -329,12 +335,19 @@ router
                 }
             }
 
+            var msgSuccessful = "";
+            if(errRecordCounter>0){
+                msgSuccessful = errRecordCounter + " record(s) skipped. student Marks updated!";
+            }else{
+                msgSuccessful = "student Marks updated!";
+            }
+
             //update to db
             subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
             subcomponent
             .save()
-            .then(() => res.json("student Marks updated!"))
+            .then(() => res.json(msgSuccessful))
             .catch((err) => res.status(400).json("Error: " + err));
         })
         .catch((err) => res.status(400).json("Error: " + err));
