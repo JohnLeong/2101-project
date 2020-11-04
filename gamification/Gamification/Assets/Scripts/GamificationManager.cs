@@ -13,7 +13,15 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
     [SerializeField]
     private SubcomponentInfo subComponentInfoPanel = null;
 
+    [Header("Settings")]
+    [SerializeField]
+    private int maxSubcomponentHeight = 10;
+    [SerializeField]
+    private float buildingHorizontalSpacing = 10.0f;
+
     [Header("Prefabs")]
+    [SerializeField]
+    private GameObject[] citybasePrefabs = null;
     [SerializeField]
     private GameObject[] buildingCenterPrefabs = null;
     [SerializeField]
@@ -21,21 +29,24 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
     [SerializeField]
     private GameObject[] buildingRoofPrefabs = null;
     [SerializeField]
-    private GameObject buildingSeperatorPrefab = null;
-    [SerializeField]
     private GameObject buildingIndicatorPrefab = null;
     [SerializeField]
     private GameObject dividerPrefab = null;
     [SerializeField]
-    private GameObject hologramPrefab = null;
+    private GameObject holoCenterPrefab = null;
+    [SerializeField]
+    private GameObject holoBottomPrefab = null;
+    [SerializeField]
+    private GameObject holoRoofPrefab = null;
 
     [SerializeField]
     private Color[] standingColors = null;
 
-    private const int maxSubcomponentHeight = 10;
+
     private const float buildingCenterHeight = 0.625f;
     private const float buildingBottomHeight = 0.838f;
-    private const float buildingHorizontalSpacing = 4.0f;
+    private const float buildingIndicatorOffset = 2.0f;
+
 
     private List<ModuleComponent> components;
 
@@ -48,25 +59,28 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
 
     private GameObject CreateBuildingObject(Vector3 position, ModuleComponent component)
     {
-        GameObject building = new GameObject();
+        GameObject building = new GameObject("Component: " + component.Name);
         building.AddComponent<Building>().Component = component;
         building.transform.position = position;
 
         float currentHeight = buildingBottomHeight;
         Color standingColor = GetStandingColor(component.ClassStandingPercentile);
-        int hologramHeight = 0;
+        int maximumHeight = component.SubComponents.Count * maxSubcomponentHeight;
+        int missingHeight = 0;
 
         //go.transform.GetComponent<MeshRenderer>().material.color = standingColor;
 
         //Create building base
         Instantiate(buildingBottomPrefabs[Random.Range(0, buildingBottomPrefabs.Length)], building.transform);
+        GameObject holobase = Instantiate(holoBottomPrefab, building.transform);
+        holobase.transform.position += new Vector3(0.0f, 0.0f, 3.5f);
 
         //Create building center
         for (int i = 0; i < component.SubComponents.Count; ++i)
         {
             SubComponent subComponent = component.SubComponents[i];
             int subComponentHeight = Mathf.Max(1, (int)(((float)subComponent.Marks / subComponent.TotalMarks) * maxSubcomponentHeight));
-            hologramHeight += maxSubcomponentHeight - subComponentHeight;
+            missingHeight += maxSubcomponentHeight - subComponentHeight;
 
             GameObject subComponentObject = new GameObject("Subcomponent: " + subComponent.Name);
             subComponentObject.AddComponent<BuildingSubcomponent>();
@@ -74,7 +88,7 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
             subComponentObject.transform.localPosition += new Vector3(0.0f, currentHeight);
 
             BoxCollider collider = subComponentObject.AddComponent<BoxCollider>();
-            collider.size = new Vector3(1.0f, buildingCenterHeight * subComponentHeight, 1.0f);
+            collider.size = new Vector3(2.0f, buildingCenterHeight * subComponentHeight, 2.0f);
             collider.center = new Vector3(0.0f, buildingCenterHeight * subComponentHeight * 0.45f, 0.0f);
 
 
@@ -94,7 +108,7 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
 
             foreach (var item in subComponentObject.GetComponentsInChildren<MeshRenderer>())
                 item.material.color = standingColor;
-            subComponentObject.GetComponent<BuildingSubcomponent>().Initialise(subComponent);
+            subComponentObject.GetComponent<BuildingSubcomponent>().Initialise(subComponent, subComponentHeight);
         }
 
         //Create building roof
@@ -103,16 +117,24 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
 
         //Create building indicator
         GameObject indicator = Instantiate(buildingIndicatorPrefab, building.transform);
-        indicator.transform.localPosition += new Vector3(0.0f, currentHeight + 1.0f);
+        indicator.transform.localPosition += new Vector3(0.0f, currentHeight + buildingIndicatorOffset);
 
         //Create building hologram
-        for (int i = 0; i < hologramHeight; ++i)
+        for (int i = 0; i < maximumHeight; ++i)
         {
-            GameObject hologram = Instantiate(hologramPrefab, building.transform);
-            hologram.transform.localPosition += new Vector3(0.0f, currentHeight);
-            currentHeight += buildingCenterHeight;
+            GameObject hologram = Instantiate(holoCenterPrefab, building.transform);
+            hologram.transform.localPosition += new Vector3(0.0f, i * buildingCenterHeight + buildingBottomHeight, 3.5f);
         }
+        GameObject holoroof = Instantiate(holoRoofPrefab, building.transform);
+        holoroof.transform.localPosition += new Vector3(0.0f, maximumHeight * buildingCenterHeight + buildingBottomHeight, 3.5f);
 
+
+        building.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);
+
+        //Create citybase
+        int citybasePrefabIndex = maximumHeight == 0 ? citybasePrefabs.Length - 1 : citybasePrefabs.Length - 1 - (int)(((maximumHeight - missingHeight) / (float)maximumHeight) * (citybasePrefabs.Length - 1) + 0.5f);
+        GameObject citybase = Instantiate(citybasePrefabs[citybasePrefabIndex]);
+        citybase.transform.SetParent(building.transform, false);
         return building;
     }
 
@@ -163,9 +185,13 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
         componentInfoPanel.Display(component);
     }
 
-    public void DisplaySubComponentInfo(SubComponent subcomponent)
+    public void DisplaySubComponentInfo(SubComponent subcomponent, BuildingSubcomponent buildingSubcomponent)
     {
-        //subComponentInfoPanel.Display(subcomponent);
+        subComponentInfoPanel.Display(subcomponent, buildingSubcomponent);
+    }
+    public void HideSubComponentInfo()
+    {
+        subComponentInfoPanel.Hide();
     }
 
 
