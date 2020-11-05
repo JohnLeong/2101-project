@@ -1287,7 +1287,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   componentName: {fileID: 211783948}
-  componentComments: {fileID: 0}
   displayOffset: {x: 8, y: 0, z: 0}
 --- !u!222 &732720479
 CanvasRenderer:

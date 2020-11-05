@@ -12,9 +12,9 @@ public class CityBase : MonoBehaviour
 
     [Header("SceneObjects")]
     [SerializeField]
-    private MeshRenderer ground;
+    private MeshRenderer ground = null;
     [SerializeField]
-    private MeshRenderer[] trees;
+    private MeshRenderer[] trees = null;
 
 
     void Awake()

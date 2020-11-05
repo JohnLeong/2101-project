@@ -8,9 +8,7 @@ public class SubcomponentInfo : MonoBehaviour
     [SerializeField]
     private Text componentName = null;
     [SerializeField]
-    private Text componentComments = null;
-    [SerializeField]
-    private Vector3 displayOffset;
+    private Vector3 displayOffset = Vector3.zero;
 
     private float buildingHeightOffset = 0.625f;
 
