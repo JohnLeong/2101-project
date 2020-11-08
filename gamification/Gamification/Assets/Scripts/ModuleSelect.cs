@@ -46,6 +46,18 @@ public class ModuleSelect : MonoBehaviour
         module.Name = moduleName;
         module.Description = moduleDescription;
         module.ComponentIds = componentIds;
-        transform.Find("Heading").GetComponent<Text>().text = moduleName;
+        transform.Find("Heading").Find("HeadingText").GetComponent<Text>().text = moduleName;
+
+        GetComponentInChildren<Canvas>().worldCamera = Camera.main;
+    }
+
+    public void NextModule()
+    {
+        SceneModuleManager.Instance.NextModule();
+    }
+
+    public void PreviousModule()
+    {
+        SceneModuleManager.Instance.PreviousModule();
     }
 }

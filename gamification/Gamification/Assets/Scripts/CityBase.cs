@@ -12,14 +12,16 @@ public class CityBase : MonoBehaviour
 
     [Header("SceneObjects")]
     [SerializeField]
-    private MeshRenderer ground = null;
+    private MeshRenderer[] ground = null;
     [SerializeField]
     private MeshRenderer[] trees = null;
 
 
     void Awake()
     {
-        ground.material.color = groundColor;
+        foreach (var mesh in ground)
+            mesh.material.color = groundColor;
+
         List<Material> mat = new List<Material>();
         foreach (var mesh in trees)
         {
