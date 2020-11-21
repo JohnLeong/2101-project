@@ -31,7 +31,7 @@ export const UploadCsvPage = () => {
         dataOutput = await file.text();
         if (submitting === false) {
           setSubmitting(true);
-          fetch(importMarksUrl + "5f8fc05aa7510740942b75fc", {
+          fetch(importMarksUrl + "5f8ed1b166ea0039a87b3bf3", {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",

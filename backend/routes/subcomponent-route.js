@@ -15,9 +15,9 @@ const router = express.Router();
 //Get all subcomponents
 router.route("/all").get((req, res) => {
     Subcomponent.find()
-      .then((subcomponents) => res.json(subcomponents))
-      .catch((err) => res.status(400).json("Error: " + err));
-  });
+        .then((subcomponents) => res.json(subcomponents))
+        .catch((err) => res.status(400).json("Error: " + err));
+});
 
 /* --------------------------------------------------------------- */
 
@@ -29,62 +29,62 @@ router
     .all(authenticateJWT([1, 2]))
     .get((req, res) => {
         Subcomponent.findById(req.params.id)
-        .then((subcomponent) => res.json(subcomponent))
-        .catch((err) => res.status(400).json("Error: " + err));
+            .then((subcomponent) => res.json(subcomponent))
+            .catch((err) => res.status(400).json("Error: " + err));
     });
 
 //Route: POST ...url.../subcomponent/new/<componentId>
 //Roles: Lecturer
 //Add a new subcomponent to a component
 router
-  .route("/new/:componentId")
-  .all(authenticateJWT([1]))
-  .post(async (req, res) => {
-    const name = req.body.name;
-    const weightage = req.body.weightage;
-    const totalMarks = req.body.totalMarks;
+    .route("/new/:componentId")
+    .all(authenticateJWT([1]))
+    .post(async (req, res) => {
+        const name = req.body.name;
+        const weightage = req.body.weightage;
+        const totalMarks = req.body.totalMarks;
 
-    const component = await Component.findById(req.params.componentId).exec();
-    if (!component) {
-      res.status(400).json("Invalid component id");
-      return;
-    }
+        const component = await Component.findById(req.params.componentId).exec();
+        if (!component) {
+            res.status(400).json("Invalid component id");
+            return;
+        }
 
-    const newSubcomponent = new Subcomponent({
-      name: name,
-      weightage: weightage,
-      totalMarks: totalMarks
+        const newSubcomponent = new Subcomponent({
+            name: name,
+            weightage: weightage,
+            totalMarks: totalMarks
+        });
+
+        newSubcomponent
+            .save()
+            .then(() => {
+                component.subcomponents.push(newSubcomponent.id);
+                component.save().then(() => res.json("Subcomponent added!"));
+            })
+            .catch((err) => res.status(400).json("Error: " + err));
     });
-
-    newSubcomponent
-      .save()
-      .then(() => {
-        component.subcomponents.push(newSubcomponent.id);
-        component.save().then(() => res.json("Subcomponent added!"));
-      })
-      .catch((err) => res.status(400).json("Error: " + err));
-  });
 
 //Route: PUT ...url.../subcomponent/<subcomponentId>
 //Roles: Lecturer
 //edit a subcomponent by id
 router
-  .route("/:id")
-  .all(authenticateJWT([1]))
-  .put((req, res) => {
-    Subcomponent.findById(req.params.id)
-      .then((subcomponent) => {
-        subcomponent.name = req.body.name ?? subcomponent.name;
-        subcomponent.weightage = req.body.weightage ?? subcomponent.weightage;
-        subcomponent.totalMarks = req.body.totalMarks ?? subcomponent.totalMarks;
+    .route("/:id")
+    .all(authenticateJWT([1]))
+    .put((req, res) => {
+        Subcomponent.findById(req.params.id)
+            .then((subcomponent) => {
+                subcomponent.name = req.body.name ?? subcomponent.name;
+                subcomponent.weightage = req.body.weightage ?? subcomponent.weightage;
+                subcomponent.totalMarks = req.body.totalMarks ?? subcomponent.totalMarks;
 
-        subcomponent
-          .save()
-          .then(() => res.json("Subcomponent updated!"))
-          .catch((err) => res.status(400).json("Error: " + err));
-      })
-      .catch((err) => res.status(400).json("Error: " + err));
-  });
+                subcomponent
+                    .save()
+                    .then(() => res.json("Subcomponent updated!"))
+                    .catch((err) => res.status(400).json("Error: " + err));
+            })
+            .catch((err) => res.status(400).json("Error: " + err));
+    });
 
 //Route: put ...url.../subcomponent/new/studentmarks/<subcomponentId>
 //Roles: Lecturer
@@ -92,188 +92,279 @@ router
 //Input para: subcomponent id
 //Input json: {"studentMarks":{user_studentObjectid: marks}}
 router
-  .route("/new/studentmarks/:subcomponentId")
-  .all(authenticateJWT([1]))
-  .put((req, res) => {
-    Subcomponent.findById(req.params.subcomponentId)
-        .then((subcomponent) => {
-            //max marks
-            const maxMarks = subcomponent.totalMarks;
-            //student marks from db
-            const storedStudentMarks = subcomponent.studentMarks;
-            var storedMap = new Map();
-            
-            //add to storedMap
-            if(storedStudentMarks!=null){
-                storedStudentMarks.forEach(function(value,key){
-                    storedMap.set(key, value);
-                })
-            }
+    .route("/new/studentmarks/:subcomponentId")
+    .all(authenticateJWT([1]))
+    .put((req, res) => {
+        Subcomponent.findById(req.params.subcomponentId)
+            .then((subcomponent) => {
+                //student marks from db
+                const storedStudentMarks = subcomponent.studentMarks;
+                var storedMap = new Map();
 
-            var errRecordCounter = 0;
-            //new student marks map
-            const studentMarks = req.body.studentMarks;            
-            //add to storedMap
-            if(studentMarks!=null){
-                for(var newKey in studentMarks){
-                    if(studentMarks[newKey] <= maxMarks && studentMarks[newKey] >=0){
-                        storedMap.set(newKey, studentMarks[newKey]);
-                    }
-                    else{
-                        ++errRecordCounter;
+                //add to storedMap
+                if (storedStudentMarks != null) {
+                    storedStudentMarks.forEach(function (value, key) {
+                        storedMap.set(key, value);
+                    })
+                }
+
+                var errRecordCounter = 0;
+                //new student marks map
+                const studentMarks = req.body.studentMarks;
+                //add to storedMap
+                if (studentMarks != null) {
+                    for (var newKey in studentMarks) {
+                        //check if marks is >= 0 and <= 100
+                        if (studentMarks[newKey] <= 100 && studentMarks[newKey] >= 0) {
+                            storedMap.set(newKey, studentMarks[newKey]);
+                        }
+                        else {
+                            ++errRecordCounter;
+                        }
                     }
                 }
-            }
 
-            var msgSuccessful = "";
-            if(errRecordCounter>0){
-                msgSuccessful = errRecordCounter + " record(s) skipped. Students Marks added!";
-            }else{
-                msgSuccessful = "Student Marks added!";
-            }
-            //update to db
-            subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
+                //determine success msg to return from backend to frontend
+                var msgSuccessful = "";
+                if (errRecordCounter > 0) {
+                    msgSuccessful = errRecordCounter + " record(s) skipped. Students Marks added!";
+                } else {
+                    msgSuccessful = "Student Marks added!";
+                }
+                //update to db
+                subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
-            subcomponent
-            .save()
-            .then(() => res.json(msgSuccessful))
+                subcomponent
+                    .save()
+                    .then(() => res.json(msgSuccessful))
+                    .catch((err) => res.status(400).json("Error: " + err));
+            })
             .catch((err) => res.status(400).json("Error: " + err));
-        })
-        .catch((err) => res.status(400).json("Error: " + err));
     });
 
-    
 
-//Route: put ...url.../subcomponent/new/importmarks/<subcomponentId>
+
+//Route: put ...url.../subcomponent/new/importmarks/<componentId>
 //Roles: Lecturer
-//import student marks from CSV 
-//Input para: subcomponent id
-//Input json: {dataOutput: 'email,marks\r\n' + 'trishraymond@sit.singaporetech.edu.sg,40\r\n' +
-//              'twannakirshner@sit.singaporetech.edu.sg,20\r\n'}
+//import student marks from CSV on per component basis
+//Input para: component id
+//Input json: {dataOutput: 'email,marks,subcomponent name\r\n' + 
+//              'trishraymond@sit.singaporetech.edu.sg,40,Quiz 1\r\n' +
+//              'twannakirshner@sit.singaporetech.edu.sg,20,Quiz 1\r\n'}
 router
-  .route("/new/importmarks/:subcomponentId")
-  //.all(authenticateJWT([1]))
-  .put((req, res) => {
-    Subcomponent.findById(req.params.subcomponentId)
-        .then((subcomponent) => {
-            //max marks
-            const maxMarks = subcomponent.totalMarks;
-            //student marks from db
-            const storedStudentMarks = subcomponent.studentMarks;
-            var storedMap = new Map();
-            
-            //add to storedMap
-            if(storedStudentMarks!=null){
-                storedStudentMarks.forEach(function(value,key){
-                    storedMap.set(key, value);
-                })
-            }
-            else{
-                res.status(400).json("Invalid request");
-                return;
-            }
+    .route("/new/importmarks/:componentId")
+    //.all(authenticateJWT([1]))
+    .put(async (req, res) => {
+        //store key value pair for subcomponet name to studentMarks
+        var subcompNameMarks = {};
+        //store id to subcompName
+        var subcompNameId = {};
 
-            //new student marks
-            const importMarks = req.body.dataOutput;   
-            if(importMarks === null){
-                console.log("Invalid request: No JSON parsed");
-                res.status(400).json("Invalid request: No JSON parsed");
-                return;
-            }
+        //count the number of error document
+        var errRecordCounter = 0;
+        var msgSuccessful = "";
 
-            //data cleansing
-            //separate into row
-            var rowSeparated = importMarks.split("\r\n");
-            //separate into column
-            var colSeparated = [];
-            rowSeparated.forEach(element => {
-                if(element === ''){
+
+        //get students _id enrolled into the component
+        const students = await Module.find(
+            { components: req.params.componentId },
+            { users: 1, _id: 0 }
+        ).exec();
+
+        //no document returned
+        if (!students) {
+            res.status(400).json("No students enrolled into this module component");
+            return;
+        }
+
+        //query component with subcomponents
+        await Component.findById(req.params.componentId)
+            .populate("subcomponents")
+            .exec()
+            .then((component) => {
+                //no document returned
+                if (!component) {
+                    res.status(400).json("Invalid component id");
                     return;
                 }
-                colSeparated.push(element.split(","));
-            });
 
-            // check for "email" & "marks" header
-            var emailIndex = -1;
-            var marksIndex = -1;
-            for (let index = 0; index < colSeparated[0].length; ++index) {
-                if((colSeparated[0][index]).toLowerCase() === 'email'){
-                    emailIndex = index;
+                //store each subcomponent into array
+                //store each subcomponent studentMarks into Map
+                for (let index = 0; index < component["subcomponents"].length; ++index) {
+                    //student marks from db
+                    const storedStudentMarks = component["subcomponents"][index]["studentMarks"];
+                    //add to storedMap
+                    var storedMap = new Map();
+                    if (storedStudentMarks != null) {
+                        storedStudentMarks.forEach(function (value, key) {
+                            storedMap.set(key, value);
+                        })
+
+                        subcompNameMarks[(component["subcomponents"][index]["name"])] = storedMap;
+                        subcompNameId[(component["subcomponents"][index]["name"])] =
+                            (component["subcomponents"][index]["_id"]);
+                    }
                 }
-                else if((colSeparated[0][index]).toLowerCase() === 'marks'){
-                    marksIndex = index;
+            })
+            .catch((err) => res.status(400).json("Error: " + err));
+
+        //new student marks
+        const importMarks = req.body.dataOutput;
+        if (importMarks === null) {
+            console.log("Invalid request: No JSON parsed");
+            res.status(400).json("Invalid request: No JSON parsed");
+            return;
+        }
+        //data cleansing
+        //separate into row
+        var rowSeparated = importMarks.split("\r\n");
+        //separate into column
+        var colSeparated = [];
+        rowSeparated.forEach(element => {
+            if (element === '') {
+                return;
+            }
+            colSeparated.push(element.split(","));
+        });
+        // check for "email" & "marks" & "Subcomponent Name" header
+        var emailIndex = -1;
+        var marksIndex = -1;
+        var subcomIndex = -1;
+        for (let index = 0; index < colSeparated[0].length; ++index) {
+            if ((colSeparated[0][index]).toString().toLowerCase().localeCompare("email") === 0) {
+                emailIndex = index;
+            }
+            else if ((colSeparated[0][index]).toString().toLowerCase().localeCompare("marks") === 0) {
+                marksIndex = index;
+            }
+            else if ((colSeparated[0][index]).toString().toLowerCase().replace(/ /g, '')
+                .localeCompare("subcomponentname") === 0) {
+                subcomIndex = index;
+            }
+        }
+        //if either 1 of the cols not available, return err
+        if ((emailIndex === -1) || (marksIndex === -1) || (subcomIndex === -1)) {
+            console.log("Invalid CSV file");
+            res.status(400).json("Invalid CSV file");
+            return;
+        }
+
+        //skip header row
+        //loop through each document row in the CSV file
+        for (let index = 1; index < colSeparated.length; ++index) {
+            const currentKeyEmail = colSeparated[index][emailIndex];
+            const currentValue = colSeparated[index][marksIndex];
+            const currentSubName = colSeparated[index][subcomIndex];
+
+            //check for invalid document for subcomponenet name
+            var boolSubcomNameMatch = false;
+            for (let index = 0; index < Object.keys(subcompNameMarks).length; ++index) {
+                if (boolSubcomNameMatch) {
+                    continue;
+                }
+                if ((Object.keys(subcompNameMarks)[index]).toString().toLowerCase().replace(/ /g, '')
+                    .localeCompare(currentSubName.toString().toLowerCase().replace(/ /g, '')) === 0) {
+                    boolSubcomNameMatch = true;
                 }
             }
+            if (!boolSubcomNameMatch) {
+                console.log(currentKeyEmail + " invalid Component Name");
+                ++errRecordCounter;
+                continue;
+            }
 
-            //if either 1 of the cols not available, return err
-            if((emailIndex === -1) || (marksIndex === -1)){
-                console.log("Invalid CSV uploaded");
-                res.status(400).json("Invalid CSV uploaded");
+            //check for invalid document for invalid marks
+            if (currentValue > 100 || currentValue < 0) {
+                console.log(currentKeyEmail + " invalid marks");
+                ++errRecordCounter;
+                continue;
+            }
+
+            //check for valid student email
+            //email to id
+            //get users id enrolled into the component
+            const currentKeyId = await User.findOne(
+                { email: currentKeyEmail },
+                { _id: 1 }
+            ).exec();
+            //email not found
+            if (!currentKeyId) {
+                console.log(currentKeyEmail + " invalid email");
+                ++errRecordCounter;
+                continue;
+            }
+
+            //check for valid id in students
+            const currentKeyIdOnly = (currentKeyId["_id"]).toString().toLowerCase().replace(/ /g, '');
+            var boolStudentIdMatch = false;
+            for (let index = 0; index < students[0]["users"].length; ++index) {
+                if (boolStudentIdMatch) {
+                    continue;
+                }
+                const currentStudentId = (students[0]["users"][index]).toString().toLowerCase().replace(/ /g, '');
+                if (currentStudentId.localeCompare(currentKeyIdOnly) === 0) {
+                    boolStudentIdMatch = true;
+                }
+            }
+            if (!boolStudentIdMatch) {
+                console.log(currentKeyEmail + " Invalid Student");
+                ++errRecordCounter;
+                continue;
+            }
+
+            //valid input, check if update stored values or add in
+            var boolToUpdate = false;
+            //find key to change
+            subcompNameMarks[currentSubName].forEach(function (value, key) {
+                if (key === currentKeyIdOnly) {
+                    //change value in key
+                    subcompNameMarks[currentSubName].set(key, currentValue);
+                    boolToUpdate = true;
+                    console.log(currentKeyEmail + " updated");
+                }
+            })
+            //if not found, add into map
+            if (!boolToUpdate) {
+                subcompNameMarks[currentSubName].set(currentKeyIdOnly, currentValue);
+                console.log(currentKeyEmail + " added");
+            }
+
+            //if checked through and all invalid document
+            if (errRecordCounter === (colSeparated.length - 1)) {
+                console.log("Invalid CSV file - all rows skipped");
+                res.status(400).json("Invalid CSV file");
                 return;
             }
 
-            console.log("emailIndex: "+ emailIndex +" marksIndex: "+ marksIndex);
-            
-            //store into Dictionary
-            var keyValue = {};
+            //update db on a per CSV row basis
+            //based on subcomponent name (converted to id)
+            await Subcomponent.findById(subcompNameId[currentSubName])
+                .then((subcomponent) => {
+                    //update to db
+                    subcomponent.studentMarks =
+                        subcompNameMarks[currentSubName] ?? subcomponent.studentMarks;
 
-            var errRecordCounter = 0;
-            //skip header row
-            for (let index = 1; index < colSeparated.length; ++index) {
-                var currentKeyEmail = colSeparated[index][emailIndex];
-                var currentValue = colSeparated[index][marksIndex];
-                //check for invalid row
-                //invalid marks
-                if(currentValue > maxMarks || currentValue < 0){
-                    console.log(currentKeyEmail+ " invalid marks");
-                    ++errRecordCounter;
-                    continue;
-                }
-
-                //TODO: invalid email
-                //email to _id
-                //_id to component
-                //component to subconponent
-
-                console.log(currentValue);
-                keyValue[currentKeyEmail]=currentValue;
-                
-                var boolFound = false;
-                //find key to change
-                storedStudentMarks.forEach(function(value,key){
-                    if(key === currentKeyEmail) {
-                        //change value in key
-                        storedMap.set(key, currentValue);
-                        boolFound = true;
-                    }
+                    subcomponent
+                        .save()
+                        .then()
+                        .catch((err) => res.status(400).json("Error: " + err));
                 })
-                //if not found, add into map
-                if(!boolFound){   
-                    storedMap.set(currentKeyEmail, currentValue);
-                    console.log(currentKeyEmail + " added");
-                }
+                .catch((err) => res.status(400).json("Error: " + err));
 
-            }
+            console.log("Row " + index + " Saved to db.");
+        }
 
-            console.log("KEYVALUE:");
-            console.log(keyValue);
-
-            var msgSuccessful = "";
-            if(errRecordCounter>0){
-                msgSuccessful = errRecordCounter + " record(s) skipped. Import Successful!";
-            }else{
-                msgSuccessful = "Import Successful!";
-            }
-            //update to db
-            subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
-
-            subcomponent
-            .save()
-            .then(() => res.json(msgSuccessful))
-            .catch((err) => res.status(400).json("Error: " + err));
-        })
-        .catch((err) => res.status(400).json("Error: " + err));
+        //determine success rate
+        if (errRecordCounter > 0) {
+            msgSuccessful = errRecordCounter + " record(s) skipped. Successfully imported marks.";
+        }
+        else {
+            msgSuccessful = "Successfully imported marks";
+        }
+        console.log(msgSuccessful);
+        res.json(msgSuccessful);
     });
+
 
 //Route: put ...url.../subcomponent/edit/studentmarks/<subcomponentId>
 //Roles: Lecturer
@@ -281,87 +372,85 @@ router
 //Input para: subcomponent id
 //Input json: {"studentMarks":{user_studentObjectid: marks}}
 router
-  .route("/edit/studentmarks/:subcomponentId")
-  .all(authenticateJWT([1]))
-  .put((req, res) => {
-    Subcomponent.findById(req.params.subcomponentId)
-        .then((subcomponent) => {
-            //max marks
-            const maxMarks = subcomponent.totalMarks;
-            //student marks from db
-            const storedStudentMarks = subcomponent.studentMarks;
-            var storedMap = new Map();
-            
-            //add to storedMap
-            if(storedStudentMarks!=null){
-                storedStudentMarks.forEach(function(value,key){
-                    storedMap.set(key, value);
-                })
-            }
-            else{
-                res.status(400).json("Invalid request");
-                return;
-            }
+    .route("/edit/studentmarks/:subcomponentId")
+    .all(authenticateJWT([1]))
+    .put((req, res) => {
+        Subcomponent.findById(req.params.subcomponentId)
+            .then((subcomponent) => {
+                //student marks from db
+                const storedStudentMarks = subcomponent.studentMarks;
+                var storedMap = new Map();
 
-            var errRecordCounter = 0;
-            //new student marks map
-            const studentMarks = req.body.studentMarks;
-
-            //add to storedMap
-            if(studentMarks!=null){
-                for(var newKey in studentMarks){
-                    if(studentMarks[newKey] > maxMarks || studentMarks[newKey] < 0){
-                        ++errRecordCounter;
-                        continue;
-                    }
-                    
-                    //find key to change
-                    var boolFound = false;
-                    storedStudentMarks.forEach(function(value,key){
-                        if(key === newKey) {
-                            console.log("keyIN = " + key);
-                            console.log("old marks = " + value);
-                            console.log("new marks = " + studentMarks[newKey]);
-                            storedMap.set(key, studentMarks[newKey]);
-                            boolFound = true;
-                        }
+                //add to storedMap
+                if (storedStudentMarks != null) {
+                    storedStudentMarks.forEach(function (value, key) {
+                        storedMap.set(key, value);
                     })
-                    //if not found, add into map
-                    if(!boolFound){   
-                        console.log("cannot find, insert to map");
-                        storedMap.set(newKey, studentMarks[newKey]);
-                        console.log(newKey + " added");
+                }
+                else {
+                    res.status(400).json("Invalid request");
+                    return;
+                }
+
+                var errRecordCounter = 0;
+                //new student marks map
+                const studentMarks = req.body.studentMarks;
+
+                //add to storedMap
+                if (studentMarks != null) {
+                    for (var newKey in studentMarks) {
+                        if (studentMarks[newKey] > 100 || studentMarks[newKey] < 0) {
+                            ++errRecordCounter;
+                            continue;
+                        }
+
+                        //find key to change
+                        var boolFound = false;
+                        storedStudentMarks.forEach(function (value, key) {
+                            if (key === newKey) {
+                                console.log("new marks = " + studentMarks[newKey]);
+                                storedMap.set(key, studentMarks[newKey]);
+                                boolFound = true;
+                            }
+                        })
+                        //if not found, add into map
+                        if (!boolFound) {
+                            console.log("cannot find, insert to map");
+                            storedMap.set(newKey, studentMarks[newKey]);
+                            console.log(newKey + " added");
+                        }
                     }
                 }
-            }
 
-            var msgSuccessful = "";
-            if(errRecordCounter>0){
-                msgSuccessful = errRecordCounter + " record(s) skipped. student Marks updated!";
-            }else{
-                msgSuccessful = "student Marks updated!";
-            }
+                var msgSuccessful = "";
+                if (errRecordCounter > 0) {
+                    msgSuccessful = errRecordCounter + " record(s) skipped. student Marks updated!";
+                } else {
+                    msgSuccessful = "student Marks updated!";
+                }
 
-            //update to db
-            subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
+                //update to db
+                subcomponent.studentMarks = storedMap ?? subcomponent.studentMarks;
 
-            subcomponent
-            .save()
-            .then(() => res.json(msgSuccessful))
+                subcomponent
+                    .save()
+                    .then(() => res.json(msgSuccessful))
+                    .catch((err) => res.status(400).json("Error: " + err));
+            })
             .catch((err) => res.status(400).json("Error: " + err));
-        })
-        .catch((err) => res.status(400).json("Error: " + err));
     });
 
 /* ----------------------- for debugging ------------------------- */
-//Delete with Problem: deleted subcomponent but conponent still have the record
 //Delete a subcomponent by id
-router.route("/:id")
-.delete(async(req, res) => {
-    Subcomponent.findByIdAndDelete(req.params.id)
-        .then(() => res.json("Subcomponent deleted."))
-        .catch((err) => res.status(400).json("Error: " + err));
-});
+router.route("/:subcomponentId")
+    .delete(async (req, res) => {
+        await Subcomponent.findByIdAndDelete(req.params.subcomponentId);
+
+        await Component.update({},
+            { $pull: { subcomponents: req.params.subcomponentId } }
+        ).then(() => res.json("Subcomponent deleted."))
+            .catch((err) => res.status(400).json("Error: " + err));
+    });
 
 /* --------------------------------------------------------------- */
 
