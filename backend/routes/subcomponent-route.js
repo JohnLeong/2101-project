@@ -42,7 +42,6 @@ router
     .post(async (req, res) => {
         const name = req.body.name;
         const weightage = req.body.weightage;
-        const totalMarks = req.body.totalMarks;
 
         const component = await Component.findById(req.params.componentId).exec();
         if (!component) {
@@ -53,7 +52,6 @@ router
         const newSubcomponent = new Subcomponent({
             name: name,
             weightage: weightage,
-            totalMarks: totalMarks
         });
 
         newSubcomponent
@@ -76,7 +74,6 @@ router
             .then((subcomponent) => {
                 subcomponent.name = req.body.name ?? subcomponent.name;
                 subcomponent.weightage = req.body.weightage ?? subcomponent.weightage;
-                subcomponent.totalMarks = req.body.totalMarks ?? subcomponent.totalMarks;
 
                 subcomponent
                     .save()
@@ -164,14 +161,13 @@ router
         var errRecordCounter = 0;
         var msgSuccessful = "";
 
-
         //get students _id enrolled into the component
         const students = await Module.find(
             { components: req.params.componentId },
             { users: 1, _id: 0 }
         ).exec();
 
-        //no document returned
+        //if no document returned
         if (!students) {
             res.status(400).json("No students enrolled into this module component");
             return;
@@ -182,7 +178,7 @@ router
             .populate("subcomponents")
             .exec()
             .then((component) => {
-                //no document returned
+                //if no document returned
                 if (!component) {
                     res.status(400).json("Invalid component id");
                     return;
@@ -193,17 +189,18 @@ router
                 for (let index = 0; index < component["subcomponents"].length; ++index) {
                     //student marks from db
                     const storedStudentMarks = component["subcomponents"][index]["studentMarks"];
-                    //add to storedMap
+                    //subcomponent Name
+                    const currentSubcomName = (component["subcomponents"][index]["name"]).toLowerCase();
+                    //add student marks from db to storedMap
                     var storedMap = new Map();
                     if (storedStudentMarks != null) {
                         storedStudentMarks.forEach(function (value, key) {
                             storedMap.set(key, value);
                         })
-
-                        subcompNameMarks[(component["subcomponents"][index]["name"])] = storedMap;
-                        subcompNameId[(component["subcomponents"][index]["name"])] =
-                            (component["subcomponents"][index]["_id"]);
                     }
+                    //store to dictory for future checking
+                    subcompNameMarks[currentSubcomName] = storedMap;
+                    subcompNameId[currentSubcomName] = (component["subcomponents"][index]["_id"]);
                 }
             })
             .catch((err) => res.status(400).json("Error: " + err));
@@ -254,7 +251,7 @@ router
         for (let index = 1; index < colSeparated.length; ++index) {
             const currentKeyEmail = colSeparated[index][emailIndex];
             const currentValue = colSeparated[index][marksIndex];
-            const currentSubName = colSeparated[index][subcomIndex];
+            const currentSubName = colSeparated[index][subcomIndex].toLowerCase();
 
             //check for invalid document for subcomponenet name
             var boolSubcomNameMatch = false;
@@ -315,14 +312,16 @@ router
             //valid input, check if update stored values or add in
             var boolToUpdate = false;
             //find key to change
-            subcompNameMarks[currentSubName].forEach(function (value, key) {
-                if (key === currentKeyIdOnly) {
-                    //change value in key
-                    subcompNameMarks[currentSubName].set(key, currentValue);
-                    boolToUpdate = true;
-                    console.log(currentKeyEmail + " updated");
-                }
-            })
+            if(subcompNameMarks[currentSubName] !=null){
+                subcompNameMarks[currentSubName].forEach(function (value, key) {
+                    if (key === currentKeyIdOnly) {
+                        //change value in key
+                        subcompNameMarks[currentSubName].set(key, currentValue);
+                        boolToUpdate = true;
+                        console.log(currentKeyEmail + " updated");
+                    }
+                })
+            }
             //if not found, add into map
             if (!boolToUpdate) {
                 subcompNameMarks[currentSubName].set(currentKeyIdOnly, currentValue);
@@ -446,10 +445,14 @@ router.route("/:subcomponentId")
     .delete(async (req, res) => {
         await Subcomponent.findByIdAndDelete(req.params.subcomponentId);
 
-        await Component.update({},
-            { $pull: { subcomponents: req.params.subcomponentId } }
-        ).then(() => res.json("Subcomponent deleted."))
-            .catch((err) => res.status(400).json("Error: " + err));
+        await Component.update(
+            {},
+            { $pull: { subcomponents: req.params.subcomponentId}},
+            { multi: true }
+        )
+
+        .then(() => res.json("Subcomponent deleted."))
+        .catch((err) => res.status(400).json("Error: " + err));
     });
 
 /* --------------------------------------------------------------- */
