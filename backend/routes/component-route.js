@@ -157,8 +157,8 @@ router
   .all(authenticateJWT([1]))
   .post(async (req, res) => {
     const name = req.body.name;
-    const componentType = req.body.password;
-    const weightage = req.body.email;
+    const componentType = req.body.componentType;
+    const weightage = req.body.weightage;
 
     const module = await Module.findById(req.params.moduleId).exec();
     if (!module) {
@@ -186,7 +186,7 @@ router
 //Update a component by id
 router
   .route("/:id")
-  .all(authenticateJWT([1]))
+  .all(authenticateJWT([1, 2]))
   .put((req, res) => {
     Component.findById(req.params.id)
       .then((component) => {
@@ -222,89 +222,89 @@ router.route("/:id").delete((req, res) => {
 /* DEBUGGING STUFF BELOW, PLEASE DONT CALL ANY OF THESE APIs */
 
 //ADDS COMPONENTS TO EACH MODULE
-router.route("/debug/distributecomponents").post(async (req, res) => {
-  const numToAdd = 1;
-  try {
-    const modules = await Module.find().exec();
+// router.route("/debug/distributecomponents").post(async (req, res) => {
+//   const numToAdd = 1;
+//   try {
+//     const modules = await Module.find().exec();
 
-    modules.forEach(async (module) => {
-      for (var i = 0; i < numToAdd; ++i) {
-        const newComponent = new Component({
-          name: "Final exam",
-          componentType: "Exam",
-          weightage: 30,
-        });
-        const result = await newComponent.save();
-        module.components.push(newComponent.id);
-        const result2 = await module.save();
-      }
-    });
-    res.json("DONE");
-  } catch (err) {
-    res.status(400).json("Error: " + err);
-  }
-});
+//     modules.forEach(async (module) => {
+//       for (var i = 0; i < numToAdd; ++i) {
+//         const newComponent = new Component({
+//           name: "Final exam",
+//           componentType: "Exam",
+//           weightage: 30,
+//         });
+//         const result = await newComponent.save();
+//         module.components.push(newComponent.id);
+//         const result2 = await module.save();
+//       }
+//     });
+//     res.json("DONE");
+//   } catch (err) {
+//     res.status(400).json("Error: " + err);
+//   }
+// });
 
-//test add subcomponent
-router.route("/debug/testingtest").post(async (req, res) => {
-  try {
-    const component = await Component.findById(
-      "5f8ed1b166ea0039a87b3bf3"
-    ).exec();
+// //test add subcomponent
+// router.route("/debug/testingtest").post(async (req, res) => {
+//   try {
+//     const component = await Component.findById(
+//       "5f8ed1b166ea0039a87b3bf3"
+//     ).exec();
 
-    const newSubComponent = new SubComponent({
-      name: "Section A",
-      weightage: 30,
-      totalMarks: 50,
-      studentMarks: {
-        "5f8d342d9c0049499cbc86c7": 30,
-        "5f8d342d9c0049499cbc86d2": 20,
-        "5f8d342d9c0049499cbc86ff": 50,
-      },
-    });
+//     const newSubComponent = new SubComponent({
+//       name: "Section A",
+//       weightage: 30,
+//       totalMarks: 50,
+//       studentMarks: {
+//         "5f8d342d9c0049499cbc86c7": 30,
+//         "5f8d342d9c0049499cbc86d2": 20,
+//         "5f8d342d9c0049499cbc86ff": 50,
+//       },
+//     });
 
-    await newSubComponent.save();
+//     await newSubComponent.save();
 
-    component.subcomponents.push(newSubComponent.id);
-    await component.save();
-    res.json("DONEE");
-  } catch (err) {
-    res.status(400).json("Error: " + err);
-  }
-});
+//     component.subcomponents.push(newSubComponent.id);
+//     await component.save();
+//     res.json("DONEE");
+//   } catch (err) {
+//     res.status(400).json("Error: " + err);
+//   }
+// });
 
-//test add comment
-router.route("/debug/commenttest").post(async (req, res) => {
-  try {
-    const component = await Component.findById(
-      "5f8ed1b166ea0039a87b3bf3"
-    ).exec();
+// //test add comment
+// router.route("/debug/commenttest").post(async (req, res) => {
+//   try {
+//     const component = await Component.findById(
+//       "5f8ed1b166ea0039a87b3bf3"
+//     ).exec();
 
-    const comment1 = new Comment({
-      commentType: true, //true = summative, false = formative
-      studentId: mongoose.Types.ObjectId("5f8d342d9c0049499cbc86c7"),
-      postedBy: mongoose.Types.ObjectId("5f8d341e9c0049499cbc86b8"),
-      body: "Hello, this is a test summative comment",
-      datePosted: Date.now(),
-    });
-    const comment2 = new Comment({
-      commentType: false, //true = summative, false = formative
-      studentId: mongoose.Types.ObjectId("5f8d342d9c0049499cbc86c7"),
-      postedBy: mongoose.Types.ObjectId("5f8d341e9c0049499cbc86b8"),
-      body: "Hello, this is a test formative comment. hihihiihihihiih",
-      datePosted: Date.now(),
-    });
+//     const comment1 = new Comment({
+//       commentType: true, //true = summative, false = formative
+//       studentId: mongoose.Types.ObjectId("5f8d342d9c0049499cbc86c7"),
+//       postedBy: mongoose.Types.ObjectId("5f8d341e9c0049499cbc86b8"),
+//       body: "Hello, this is a test summative comment",
+//       datePosted: Date.now(),
+//     });
+//     const comment2 = new Comment({
+//       commentType: false, //true = summative, false = formative
+//       studentId: mongoose.Types.ObjectId("5f8d342d9c0049499cbc86c7"),
+//       postedBy: mongoose.Types.ObjectId("5f8d341e9c0049499cbc86b8"),
+//       body: "Hello, this is a test formative comment. hihihiihihihiih",
+//       datePosted: Date.now(),
+//     });
 
-    await comment1.save();
-    await comment2.save();
-    component.comments.push(comment1.id);
-    component.comments.push(comment2.id);
-    await component.save();
+//     await comment1.save();
+//     await comment2.save();
+//     component.comments.push(comment1.id);
+//     component.comments.push(comment2.id);
+//     await component.save();
 
-    res.json("DONEE");
-  } catch (err) {
-    res.status(400).json("Error: " + err);
-  }
-});
+//     res.json("DONEE");
+//   } catch (err) {
+//     res.status(400).json("Error: " + err);
+//   }
+// });
 
 export default router;
