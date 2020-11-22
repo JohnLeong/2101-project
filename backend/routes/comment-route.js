@@ -102,10 +102,11 @@ router
     .route("/:commentId")
     .delete(async (req, res) => {
         await Comment.findByIdAndDelete(req.params.commentId);
-
-        await Component.updateOne(
+        
+        await Component.update(
             {},
-            { $pullAll: { comments: [req.params.commentId] } }
+            { $pull: { comments: req.params.commentId}},
+            { multi: true }
         )
         .then(() => res.json("Comment deleted."))
         .catch((err) => res.status(400).json("Error: " + err));

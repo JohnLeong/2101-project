@@ -150,7 +150,7 @@ router
 //              'twannakirshner@sit.singaporetech.edu.sg,20,Quiz 1\r\n'}
 router
     .route("/new/importmarks/:componentId")
-    //.all(authenticateJWT([1]))
+    .all(authenticateJWT([1]))
     .put(async (req, res) => {
         //store key value pair for subcomponet name to studentMarks
         var subcompNameMarks = {};
@@ -184,8 +184,8 @@ router
                     return;
                 }
 
-                //store each subcomponent into array
-                //store each subcomponent studentMarks into Map
+                //store each subcomponent: studentMarks<map> into dictionary
+                //store each subcomponent: _id into dictionary
                 for (let index = 0; index < component["subcomponents"].length; ++index) {
                     //student marks from db
                     const storedStudentMarks = component["subcomponents"][index]["studentMarks"];
@@ -198,7 +198,7 @@ router
                             storedMap.set(key, value);
                         })
                     }
-                    //store to dictory for future checking
+                    //store to dictionary for future checking
                     subcompNameMarks[currentSubcomName] = storedMap;
                     subcompNameId[currentSubcomName] = (component["subcomponents"][index]["_id"]);
                 }
