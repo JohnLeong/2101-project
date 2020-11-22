@@ -190,7 +190,7 @@ router
                     //student marks from db
                     const storedStudentMarks = component["subcomponents"][index]["studentMarks"];
                     //subcomponent Name
-                    const currentSubcomName = (component["subcomponents"][index]["name"]).toLowerCase();
+                    const currentSubcomName = (component["subcomponents"][index]["name"]).toString().toLowerCase();
                     //add student marks from db to storedMap
                     var storedMap = new Map();
                     if (storedStudentMarks != null) {
@@ -234,13 +234,14 @@ router
             else if ((colSeparated[0][index]).toString().toLowerCase().localeCompare("marks") === 0) {
                 marksIndex = index;
             }
-            else if ((colSeparated[0][index]).toString().toLowerCase().replace(/ /g, '')
+            else if ((colSeparated[0][index]).toString().toLowerCase().replace(/\s/g,"")
                 .localeCompare("subcomponentname") === 0) {
                 subcomIndex = index;
             }
         }
         //if either 1 of the cols not available, return err
         if ((emailIndex === -1) || (marksIndex === -1) || (subcomIndex === -1)) {
+            console.log(emailIndex + " " + marksIndex + " " + subcomIndex);
             console.log("Invalid CSV file");
             res.status(400).json("Invalid CSV file");
             return;
@@ -251,7 +252,9 @@ router
         for (let index = 1; index < colSeparated.length; ++index) {
             const currentKeyEmail = colSeparated[index][emailIndex];
             const currentValue = colSeparated[index][marksIndex];
-            const currentSubName = colSeparated[index][subcomIndex].toLowerCase();
+            const currentSubName = colSeparated[index][subcomIndex].toString().toLowerCase().replace(/\s/g,"");
+
+            var currentMatchSubName = "";
 
             //check for invalid document for subcomponenet name
             var boolSubcomNameMatch = false;
@@ -259,9 +262,10 @@ router
                 if (boolSubcomNameMatch) {
                     continue;
                 }
-                if ((Object.keys(subcompNameMarks)[index]).toString().toLowerCase().replace(/ /g, '')
-                    .localeCompare(currentSubName.toString().toLowerCase().replace(/ /g, '')) === 0) {
+                if ((Object.keys(subcompNameMarks)[index]).replace(/\s/g,"")
+                    .localeCompare(currentSubName) === 0) {
                     boolSubcomNameMatch = true;
+                    currentMatchSubName = Object.keys(subcompNameMarks)[index];
                 }
             }
             if (!boolSubcomNameMatch) {
@@ -292,13 +296,13 @@ router
             }
 
             //check for valid id in students
-            const currentKeyIdOnly = (currentKeyId["_id"]).toString().toLowerCase().replace(/ /g, '');
+            const currentKeyIdOnly = (currentKeyId["_id"]).toString();
             var boolStudentIdMatch = false;
             for (let index = 0; index < students[0]["users"].length; ++index) {
                 if (boolStudentIdMatch) {
                     continue;
                 }
-                const currentStudentId = (students[0]["users"][index]).toString().toLowerCase().replace(/ /g, '');
+                const currentStudentId = (students[0]["users"][index]).toString();
                 if (currentStudentId.localeCompare(currentKeyIdOnly) === 0) {
                     boolStudentIdMatch = true;
                 }
@@ -312,11 +316,11 @@ router
             //valid input, check if update stored values or add in
             var boolToUpdate = false;
             //find key to change
-            if(subcompNameMarks[currentSubName] !=null){
-                subcompNameMarks[currentSubName].forEach(function (value, key) {
+            if(subcompNameMarks[currentMatchSubName] !=null){
+                subcompNameMarks[currentMatchSubName].forEach(function (value, key) {
                     if (key === currentKeyIdOnly) {
                         //change value in key
-                        subcompNameMarks[currentSubName].set(key, currentValue);
+                        subcompNameMarks[currentMatchSubName].set(key, currentValue);
                         boolToUpdate = true;
                         console.log(currentKeyEmail + " updated");
                     }
@@ -324,24 +328,17 @@ router
             }
             //if not found, add into map
             if (!boolToUpdate) {
-                subcompNameMarks[currentSubName].set(currentKeyIdOnly, currentValue);
+                subcompNameMarks[currentMatchSubName].set(currentKeyIdOnly, currentValue);
                 console.log(currentKeyEmail + " added");
-            }
-
-            //if checked through and all invalid document
-            if (errRecordCounter === (colSeparated.length - 1)) {
-                console.log("Invalid CSV file - all rows skipped");
-                res.status(400).json("Invalid CSV file");
-                return;
             }
 
             //update db on a per CSV row basis
             //based on subcomponent name (converted to id)
-            await Subcomponent.findById(subcompNameId[currentSubName])
+            await Subcomponent.findById(subcompNameId[currentMatchSubName])
                 .then((subcomponent) => {
                     //update to db
                     subcomponent.studentMarks =
-                        subcompNameMarks[currentSubName] ?? subcomponent.studentMarks;
+                        subcompNameMarks[currentMatchSubName] ?? subcomponent.studentMarks;
 
                     subcomponent
                         .save()
@@ -351,6 +348,13 @@ router
                 .catch((err) => res.status(400).json("Error: " + err));
 
             console.log("Row " + index + " Saved to db.");
+        }
+
+        //if checked through and all invalid document
+        if (errRecordCounter === (colSeparated.length - 1)) {
+            console.log("Invalid CSV file - all rows skipped");
+            res.status(400).json("Invalid CSV file");
+            return;
         }
 
         //determine success rate
@@ -414,7 +418,6 @@ router
                         })
                         //if not found, add into map
                         if (!boolFound) {
-                            console.log("cannot find, insert to map");
                             storedMap.set(newKey, studentMarks[newKey]);
                             console.log(newKey + " added");
                         }
@@ -450,11 +453,20 @@ router.route("/:subcomponentId")
             { $pull: { subcomponents: req.params.subcomponentId}},
             { multi: true }
         )
-
         .then(() => res.json("Subcomponent deleted."))
         .catch((err) => res.status(400).json("Error: " + err));
     });
 
+//remove totalmarks field
+// router.route("/debug/remove/totalmarks")
+//     .delete(async (req, res) => {
+//         await Subcomponent.updateMany(
+//             {},
+//             { $unset: {"totalMarks": ""} }
+//         )
+//         .then(() => res.json("Removed totalMarks field from Subcomponent."))
+//         .catch((err) => res.status(400).json("Error: " + err));
+//     });
 /* --------------------------------------------------------------- */
 
 export default router;

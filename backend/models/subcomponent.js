@@ -6,7 +6,7 @@ const subcomponentSchema = new Schema(
   {
     name: String,
     weightage: Number,
-    totalMarks: Number,
+    // totalMarks: Number,
     studentMarks: {
       type: Map,
       of: Number
