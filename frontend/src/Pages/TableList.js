@@ -202,7 +202,7 @@ export default function TableList() {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(-1);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -285,8 +285,8 @@ export default function TableList() {
                     >
                       {/********************* INPUT CELL DATA *********************/}
                       <StyledTableCell>
-                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-                          {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(index)}>
+                          {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                       </StyledTableCell>
                       <StyledTableCell align="center">{row.studentID}</StyledTableCell>
@@ -314,7 +314,7 @@ export default function TableList() {
                     </StyledTableRow>
                     <TableRow>
                       <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Collapse in={open === index} timeout="auto" unmountOnExit>
                           <Box margin={1}>
                             <Table size="small" aria-label="Subcomponent information">
                               <TableHead>
