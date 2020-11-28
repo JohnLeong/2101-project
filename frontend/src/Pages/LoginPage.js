@@ -10,6 +10,7 @@ import Container from '@material-ui/core/Container';
 import Cookies from 'js-cookie'
 import { loginUrl, modulesUrl } from '../routes';
 import { useHistory } from 'react-router-dom';
+import { getClaims } from '../TokenClaims';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -69,8 +70,15 @@ export const LoginPage = () => {
           //Add token to cookies
           Cookies.set("token", token.accessToken);
 
-          //Redirect to modules
-          history.push(modulesUrl);
+          //Redirect
+          const role = getClaims().role;
+          if (role === 1) {          //Lecturer
+            history.push(modulesUrl);
+          } else if (role === 2) {   //Student
+            history.push("/student/gamification");
+          } else {
+            history.push("/login");
+          }
         })
         .catch((err) => {
           console.error("Login error: " + err);
@@ -123,12 +131,14 @@ export const LoginPage = () => {
           >
             Sign In
           </Button>
+          <p>All account passwords are password123</p>
           <p>Lecturer</p>
-          <p>Username: julianntacy@sit.singaporetech.edu.sg</p>
-          <p>Password: password123</p>
+          <p>julianntacy@sit.singaporetech.edu.sg</p>
+          <p>roscoeagosta@sit.singaporetech.edu.sg</p>
           <p>Student</p>
-          <p>Username: carmelacallicoat@sit.singaporetech.edu.sg</p>
-          <p>Password: password123</p>
+          <p>carmelacallicoat@sit.singaporetech.edu.sg</p>
+          <p>darylvittetoe@sit.singaporetech.edu.sg</p>
+          <p>susannahmcgibbon@sit.singaporetech.edu.sg</p>
         </form>
       </div>
     </Container>
