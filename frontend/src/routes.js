@@ -19,7 +19,7 @@
 import Dashboard from "@material-ui/icons/Dashboard";
 // core components/views for Admin layout
 import DashboardPage from "./Pages/Dashboard.js";
-import TableList from "./Pages/TableList.js";
+import ComponentView from "./Pages/ComponentView.js";
 import ClassView from "./Pages/ClassView.js"
 import ClassList from "./Pages/ClassGrades";
 
@@ -54,10 +54,10 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/table",
-    name: "Table List",
+    path: "/componentgrades",
+    name: "Component View",
     icon: "content_paste",
-    component: TableList,
+    component: ComponentView,
     layout: "/admin",
     hidden: true,
   },

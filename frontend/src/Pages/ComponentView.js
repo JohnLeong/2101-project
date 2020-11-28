@@ -1,4 +1,5 @@
-import React from "react";
+import React, { Fragment, useState } from "react";
+import ComponentUI from "../Boundaries/ComponentUI"
 // core components
 import Button from "../Components/CustomButtons/Button.js";
 // @material-ui/core components
@@ -14,8 +15,6 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import IconButton from '@material-ui/core/IconButton';
@@ -106,6 +105,7 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+
 /********************************** TABLE HEAD **********************************/
 const headCells = [
   { id: 'collapse', numeric: false, disablePadding: false, label: '' },
@@ -124,39 +124,39 @@ function EnhancedTableHead(props) {
 
   return (
     <TableHead>
-      <StyledTableRow>
-        {headCells.map((headCell) => (
-          <StyledTableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'left' : 'center'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <StyledTableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+        <StyledTableRow>
+          {headCells.map((headCell) => (
+            <StyledTableCell
+              key={headCell.id}
+              align={headCell.numeric ? 'left' : 'center'}
+              padding={headCell.disablePadding ? 'none' : 'default'}
+              sortDirection={orderBy === headCell.id ? order : false}
             >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </StyledTableSortLabel>
+              <StyledTableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : 'asc'}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  </span>
+                ) : null}
+              </StyledTableSortLabel>
+            </StyledTableCell>
+          ))}
+          <StyledTableCell padding="checkbox">
+            <Checkbox
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{ 'aria-label': 'select all students to input comments' }}
+            />
           </StyledTableCell>
-        ))}
-        <StyledTableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{ 'aria-label': 'select all students to input comments' }}
-          />
-        </StyledTableCell>
-      </StyledTableRow>
-      
-    </TableHead>
+        </StyledTableRow>
+        
+      </TableHead>
   );
 }
 
@@ -177,6 +177,7 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     width: '100%',
     marginBottom: theme.spacing(2),
+    clear: 'right'
   },
   table: {
     minWidth: 750,
@@ -192,6 +193,11 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  buttonDiv: {
+    backgroundColor: 'transparent',
+    float: 'right',
+    margin: '10px',
+  }
 }));
 
 export default function TableList() {
@@ -200,7 +206,6 @@ export default function TableList() {
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(-1);
 
@@ -232,7 +237,7 @@ export default function TableList() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1),  
       );
     }
 
@@ -248,20 +253,55 @@ export default function TableList() {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  /****************** IMPORT MARKS ******************/
+  const [submitting, setSubmitting] = useState(false);
+
+  //Source: https://masakudamatsu.medium.com/how-to-customize-the-file-upload-button-in-react-b3866a5973d8
+  // Create a reference to the hidden file input element
+  const hiddenFileInput = React.useRef(null);
+
+  // programatically click hidden file input element
+  // when the Button is clicked
+  const importClick = event => {
+    hiddenFileInput.current.click();
+  };
+
+  // handle the user-selected file 
+  const importChange = async (event) => {
+    await ComponentUI.displayFileDialog(event, [submitting, setSubmitting], "5f8ed1b166ea0039a87b3bf3");
+  };
+
+  /****************** RETURN HTML ******************/
   return (
     <div className={classes.root}>
+      <div className={classes.buttonDiv}>
+        <Fragment>
+          <Button
+          onClick={importClick}
+          type="submit"
+          variant="contained"
+          tabindex="0"
+          style={{backgroundColor: '#3d3d3d'}}>Import Marks</Button>
+
+          <input type="file" name="file"
+            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+            ref={hiddenFileInput}
+            onChange={importChange}
+            style={{ display: 'none' }} />
+        </Fragment>
+        <Button tabindex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
+          <span class="MuiButton-label">Add Comment</span><span class="MuiTouchRipple-root"></span>
+        </Button>
+      </div>
       <Paper className={classes.paper}>
         <TableContainer>
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='small'
           >
             <EnhancedTableHead
               classes={classes}
@@ -355,10 +395,6 @@ export default function TableList() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </div>
     );
   }
