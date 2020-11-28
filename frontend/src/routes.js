@@ -43,7 +43,7 @@ export const importMarksUrl = backendUrl + "subcomponent/new/importmarks/";     
 // getStudentMarks()
 
 //Internal (frontend)
-export const modulesUrl = "/modules/";
+export const modulesUrl = "/admin/dashboard";
 
 const dashboardRoutes = [
   {

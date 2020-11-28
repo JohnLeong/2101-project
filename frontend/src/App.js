@@ -6,6 +6,8 @@ import { Route, Switch, Redirect, BrowserRouter } from "react-router-dom";
 import Admin from "./layouts/Admin.js";
 
 import "./assets/css/material-dashboard-react.css?v=1.9.0";
+import PrivateRoute from "./Components/PrivateRoute";
+import GamificationPage from "./Pages/GamificationPage"
 
 function App() {
   return (
@@ -13,6 +15,7 @@ function App() {
       <div>
         <Switch>
           <Route path="/login" component={LoginPage} />
+          <PrivateRoute path="/student/gamification" component={GamificationPage} roles={[2]}/>
           <Route path="/admin" component={Admin} />
           <Redirect from="/" to="/login" />
         </Switch>
