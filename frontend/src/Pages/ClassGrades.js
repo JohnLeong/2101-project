@@ -16,6 +16,8 @@ import Switch from '@material-ui/core/Switch';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import IconButton from '@material-ui/core/IconButton';
+import ClassManagement from "../Control/ClassManagement";
+import { useParams } from "react-router-dom";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -177,12 +179,14 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 export default function ClassList() {
-    const classes = useStyles();
+  const classes = useStyles();
+  const { classId } = useParams();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [classData, setClassData] = React.useState([]);
     
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -204,6 +208,19 @@ export default function ClassList() {
     setDense(event.target.checked);
   };
 
+  React.useEffect(() => {
+    console.log("Page loaded!");
+
+    const loadData = async () => {
+      const results = await ClassManagement.getClass(classId);
+      console.log(results);
+      setClassData(results);
+    };
+
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -218,10 +235,10 @@ export default function ClassList() {
               order={order}
               orderBy={orderBy}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={classData.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              {classData.length < 1 ? <p>Loading</p> : stableSort(classData, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   return (
@@ -244,7 +261,7 @@ export default function ClassList() {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={classData.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

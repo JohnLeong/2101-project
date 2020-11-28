@@ -20,6 +20,8 @@ import Dashboard from "@material-ui/icons/Dashboard";
 // core components/views for Admin layout
 import DashboardPage from "./Pages/Dashboard.js";
 import TableList from "./Pages/TableList.js";
+import ClassView from "./Pages/ClassView.js"
+import ClassList from "./Pages/ClassGrades";
 
 //External endpoints (backend)
 export const backendUrl = "http://localhost:5000/";
@@ -28,6 +30,9 @@ export const importMarksUrl = backendUrl + "subcomponent/new/importmarks/";
 export const createComponentUrl = backendUrl + "component/new/"                 //POST, component/new/<moduleId>
 export const getComponentUrl = backendUrl + "component/"                        //GET, component/<componentId>
 export const updateComponentUrl = backendUrl + "component/"                     //PUT, component/<componentId>
+export const getUserModulesUrl = backendUrl + "module/usermodules/"             //GET
+export const getModuleInfoUrl = backendUrl + "module/"                          //GET module/<moduleId>
+export const getClassGradesUrl = backendUrl + "component/lecturer/grades/"     //GET component/lecturer/grades/<classId>
 
 //Internal (frontend)
 export const modulesUrl = "/modules/";
@@ -45,7 +50,24 @@ const dashboardRoutes = [
     name: "Table List",
     icon: "content_paste",
     component: TableList,
-    layout: "/admin"
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/moduleclasses/:moduleId",
+    name: "Classes",
+    icon: "content_paste",
+    component: ClassView,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/classgrades/:classId",
+    name: "Classes grades",
+    icon: "content_paste",
+    component: ClassList,
+    layout: "/admin",
+    hidden: true,
   },
 ];
 

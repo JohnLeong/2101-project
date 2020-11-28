@@ -28,18 +28,15 @@ router
 //Roles: Lecturer
 //Gets the grades and standings of students in this lecturer's classes
 router
-  .route("/lecturer/grades/:moduleId")
+  .route("/lecturer/grades/:classId")
   .all(authenticateJWT([1]))
   .get(async (req, res) => {
     try {
-      //Find module
-      const module = await Module.findById(req.params.moduleId).exec();
+      //Find class lecturer teaches
+      const moduleClass = await ModuleClass.findById(req.params.classId).exec();
 
-      //Find classes lecturer teaches
-      const moduleClasses = await ModuleClass.find({
-        _id: { $in: module.classes },
-        lecturers: req.user.userId,
-      }).exec();
+      //Find module
+      const module = await Module.findById(moduleClass.moduleId).exec();
 
       //Find all components in the module
       var temp = await Component.find({
@@ -66,8 +63,6 @@ router
 
       //Loop through each class the lecturer teaches
       var results = [];
-      for (var i = 0; i < moduleClasses.length; ++i) {
-        const moduleClass = moduleClasses[i];
 
         //Find students in this class
         var students = await User.find({
@@ -105,7 +100,7 @@ router
         var maximumMarks = 0;
         components.forEach((component) => {
           component.subcomponents.forEach((subcomponent) =>{
-            maximumMarks += subcomponent.totalMarks * subcomponent.weightage
+            maximumMarks += 100 * subcomponent.weightage
           });
         });
 
@@ -139,10 +134,7 @@ router
           classResults.push([student.name, student.email, standing, grade]);
         });
 
-        results.push([moduleClass.name, classResults]);
-      }
-
-      res.json(results);
+      res.json({classId : moduleClass.id, results : classResults});
 
     } catch (err) {
       (err) => res.status(400).json("Error: " + err);

@@ -9,6 +9,7 @@ const moduleClassSchema = new Schema(
       required: true,
       //unique: true,
     },
+    classHours: String,
     students: [{ type: Schema.Types.ObjectId, ref: "User" }],
     lecturers: [{ type: Schema.Types.ObjectId, ref: "User" }],
     moduleId: { type: Schema.Types.ObjectId, ref: "Module" },

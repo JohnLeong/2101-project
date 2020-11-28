@@ -199,6 +199,7 @@ router.route("/all").get((req, res) => {
 //Get a module by id
 router.route("/:id").get((req, res) => {
   Module.findById(req.params.id)
+    .populate("classes")
     .then((module) => res.json(module))
     .catch((err) => res.status(400).json("Error: " + err));
 });
