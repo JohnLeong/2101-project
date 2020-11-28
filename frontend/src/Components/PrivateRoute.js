@@ -8,6 +8,13 @@ const PrivateRoute = ({ component: Component, roles, ...rest }) => {
   const isLoggedIn = Cookies.get("token") != null;
   const isAuthorized = roles.includes(getClaims().role);
 
+  console.log("Logged in");
+  console.log(isLoggedIn);
+  console.log("Auth");
+  console.log(isAuthorized);
+  console.log("Role");
+  console.log(getClaims().role);
+
   return (
     <Route
       {...rest}

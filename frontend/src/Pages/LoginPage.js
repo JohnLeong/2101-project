@@ -76,7 +76,7 @@ export const LoginPage = () => {
           if (res.ok) {
             return res.json();
           } else {
-            throw "Invalid credentials";
+            throw new Error("Invalid credentials");
           }
         })
         .then((jsonData) => {
@@ -144,6 +144,12 @@ export const LoginPage = () => {
           >
             Sign In
           </Button>
+          <p>Lecturer</p>
+          <p>Username: julianntacy@sit.singaporetech.edu.sg</p>
+          <p>Password: password123</p>
+          <p>Student</p>
+          <p>Username: carmelacallicoat@sit.singaporetech.edu.sg</p>
+          <p>Password: password123</p>
         </form>
       </div>
       <Box mt={8}>
