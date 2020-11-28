@@ -11,11 +11,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import IconButton from '@material-ui/core/IconButton';
 import ClassManagement from "../Control/ClassManagement";
 import { useParams } from "react-router-dom";
 
@@ -62,16 +57,6 @@ function createData(studentID, name, grade, rank) {
     rank
   };
 }
-
-const rows = [
-  createData('1902123', 'DONNY YEN', 'A', '1' ),
-  createData('1902345', 'HAPPY ME', 'F', '5'),
-  createData('1902456', 'ALEX CHEN', 'B', '2'),
-  createData('1906123', 'HUMPTY', 'B+', '4'),
-  createData('1906433', 'DUMPTY', 'B', '3'),
-  createData('1906653', 'HEHE', 'D', '6'),
-];
-
 
 
 function descendingComparator(a, b, orderBy) {
@@ -184,7 +169,6 @@ export default function ClassList() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [classData, setClassData] = React.useState([]);
     
@@ -202,10 +186,6 @@ export default function ClassList() {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-  
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
   };
 
   React.useEffect(() => {
@@ -228,7 +208,7 @@ export default function ClassList() {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='small'
           >
             <EnhancedTableHead
               classes={classes}
@@ -268,10 +248,6 @@ export default function ClassList() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
     </div>
     );
   }
