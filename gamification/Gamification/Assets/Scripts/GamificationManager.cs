@@ -72,8 +72,8 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
 
         //Create building base
         Instantiate(buildingBottomPrefabs[Random.Range(0, buildingBottomPrefabs.Length)], building.transform);
-        GameObject holobase = Instantiate(holoBottomPrefab, building.transform);
-        holobase.transform.position += new Vector3(0.0f, 0.0f, 3.5f);
+        //GameObject holobase = Instantiate(holoBottomPrefab, building.transform);
+        //holobase.transform.position += new Vector3(0.0f, 0.0f, 3.5f);
 
         //Create building center
         for (int i = 0; i < component.SubComponents.Count; ++i)
@@ -120,13 +120,13 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
         indicator.transform.localPosition += new Vector3(0.0f, currentHeight + buildingIndicatorOffset);
 
         //Create building hologram
-        for (int i = 0; i < maximumHeight; ++i)
-        {
-            GameObject hologram = Instantiate(holoCenterPrefab, building.transform);
-            hologram.transform.localPosition += new Vector3(0.0f, i * buildingCenterHeight + buildingBottomHeight, 3.5f);
-        }
-        GameObject holoroof = Instantiate(holoRoofPrefab, building.transform);
-        holoroof.transform.localPosition += new Vector3(0.0f, maximumHeight * buildingCenterHeight + buildingBottomHeight, 3.5f);
+        //for (int i = 0; i < maximumHeight; ++i)
+        //{
+        //    GameObject hologram = Instantiate(holoCenterPrefab, building.transform);
+        //    hologram.transform.localPosition += new Vector3(0.0f, i * buildingCenterHeight + buildingBottomHeight, 3.5f);
+        //}
+        //GameObject holoroof = Instantiate(holoRoofPrefab, building.transform);
+        //holoroof.transform.localPosition += new Vector3(0.0f, maximumHeight * buildingCenterHeight + buildingBottomHeight, 3.5f);
 
 
         building.transform.localScale = new Vector3(2.0f, 2.0f, 2.0f);

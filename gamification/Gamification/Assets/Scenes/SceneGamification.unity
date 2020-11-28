@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 2.84
   m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 16bc8a9d5451ca44d8f70575adbece3a, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 3e5399bd195de7649b874f58c1b9f8a3, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1769,8 +1769,8 @@ MonoBehaviour:
   buildingHorizontalSpacing: 60
   citybasePrefabs:
   - {fileID: 6655095045852362574, guid: bf0b04a0359432e40b377618a2147058, type: 3}
-  - {fileID: 4426880015864720062, guid: 1f06557943342144e9b11ef1a3593fb0, type: 3}
-  - {fileID: 5943370617707918774, guid: 1d7f7d033ab764646b2a0ab00c8c2290, type: 3}
+  - {fileID: 6655095045852362574, guid: bf0b04a0359432e40b377618a2147058, type: 3}
+  - {fileID: 6655095045852362574, guid: bf0b04a0359432e40b377618a2147058, type: 3}
   - {fileID: 3156758171778833591, guid: 1106896d31560ee4cb6db9a98b428788, type: 3}
   - {fileID: 1625990553949934044, guid: 97675ddfff991754580a01495587db6c, type: 3}
   buildingCenterPrefabs:
