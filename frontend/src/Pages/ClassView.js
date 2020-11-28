@@ -13,12 +13,10 @@ import CardBody from "../Components/Card/CardBody.js";
 import styles from "../assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
 // Images
-import module1 from "../assets/img/Module1.jpg";
-// import module2 from "../assets/img/Module2.jpg";
-// import module3 from "../assets/img/Module3.jpeg";
 import ClassManagement from "../Control/ClassManagement";
 
 const useStyles = makeStyles(styles);
+
 
 export default function Dashboard() {
   const classes = useStyles();
@@ -26,6 +24,7 @@ export default function Dashboard() {
   const history = useHistory();
 
   const [moduleclasses, setClasses] = React.useState(null);
+  
 
   React.useEffect(() => {
     console.log("Page loaded!");
@@ -45,15 +44,14 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
+    <div className={classes.root}>
       <GridContainer>
         {moduleclasses == null ? (
           <p key="loading">Loading</p>
         ) : (
           moduleclasses.map((moduleclass) => (
-            <GridItem xs={12} sm={12} md={4} key={moduleclass.id} onClick={() => navigateToClass(moduleclass.id)}>
-              <Card chart>
-                <img src={module1} height="280" alt="Module 1" />
+            <GridItem xs={12} sm={12} md={12} key={moduleclass.id} onClick={() => navigateToClass(moduleclass.id)}>
+              <Card chart style={{marginBottom: 0, cursor: 'pointer'}}>
                 <CardBody>
                   <h4 className={classes.cardTitle}>{moduleclass.name}</h4>
                   <p className={classes.cardCategory}>{moduleclass.classHours}</p>
@@ -62,34 +60,6 @@ export default function Dashboard() {
             </GridItem>
           ))
         )}
-
-        {/* <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <img src={module1} height="280" alt="Module 1" />
-            <CardBody>
-              <h4 className={classes.cardTitle}>P1</h4>
-              <p className={classes.cardCategory}>THURS 4PM-7PM</p>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <img src={module2} height="280" alt="Module 2" />
-            <CardBody>
-              <h4 className={classes.cardTitle}>P2</h4>
-              <p className={classes.cardCategory}>FRI 9AM-1PM</p>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <img src={module3} height="280" alt="Module 3" />
-            <CardBody>
-              <h4 className={classes.cardTitle}>P3</h4>
-              <p className={classes.cardCategory}>FRI 3PM-6PM</p>
-            </CardBody>
-          </Card>
-        </GridItem> */}
 
       </GridContainer>
     </div>
