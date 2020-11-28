@@ -23,11 +23,19 @@ import TableList from "./Pages/TableList.js";
 
 //External endpoints (backend)
 export const backendUrl = "http://localhost:5000/";
+
 export const loginUrl = backendUrl + "user/login";                              //POST
-export const importMarksUrl = backendUrl + "subcomponent/new/importmarks/";
+
 export const createComponentUrl = backendUrl + "component/new/"                 //POST, component/new/<moduleId>
 export const getComponentUrl = backendUrl + "component/"                        //GET, component/<componentId>
 export const updateComponentUrl = backendUrl + "component/"                     //PUT, component/<componentId>
+
+export const createSubComponentUrl = backendUrl + "subcomponent/new/";                  //POST, subcomponent/new/<componentId>
+export const updateSubComponentUrl = backendUrl + "subcomponent/";                      //PUT, subcomponent/<subcomponentId>
+export const getSubComponentUrl = backendUrl + "subcomponent/";                         //GET, subcomponent/<subcomponentId>
+export const updateStudentMarksUrl = backendUrl + "subcomponent/edit/studentmarks/";    //PUT, subcomponent/edit/studentmarks/<subcomponentId>
+export const importMarksUrl = backendUrl + "subcomponent/new/importmarks/";             //PUT, subcomponent/new/importmarks/<componentId>
+// getStudentMarks()
 
 //Internal (frontend)
 export const modulesUrl = "/modules/";

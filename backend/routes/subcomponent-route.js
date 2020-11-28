@@ -45,7 +45,7 @@ router
 
         const component = await Component.findById(req.params.componentId).exec();
         if (!component) {
-            res.status(400).json("Invalid component id");
+            res.status(400).json("Error: Invalid component id");
             return;
         }
 
@@ -169,7 +169,7 @@ router
 
         //if no document returned
         if (!students) {
-            res.status(400).json("No students enrolled into this module component");
+            res.status(400).json("Error: No students enrolled into this module component");
             return;
         }
 
@@ -180,7 +180,7 @@ router
             .then((component) => {
                 //if no document returned
                 if (!component) {
-                    res.status(400).json("Invalid component id");
+                    res.status(400).json("Error: Invalid component id");
                     return;
                 }
 
@@ -208,8 +208,8 @@ router
         //new student marks
         const importMarks = req.body.dataOutput;
         if (importMarks === null) {
-            console.log("Invalid request: No JSON parsed");
-            res.status(400).json("Invalid request: No JSON parsed");
+            console.log("Error: Invalid request: No JSON parsed");
+            res.status(400).json("Error: Invalid request: No JSON parsed");
             return;
         }
         //data cleansing
@@ -242,8 +242,8 @@ router
         //if either 1 of the cols not available, return err
         if ((emailIndex === -1) || (marksIndex === -1) || (subcomIndex === -1)) {
             console.log(emailIndex + " " + marksIndex + " " + subcomIndex);
-            console.log("Invalid CSV file");
-            res.status(400).json("Invalid CSV file");
+            console.log("Error: Invalid CSV file");
+            res.status(400).json("Error: Invalid CSV file");
             return;
         }
 
@@ -352,8 +352,8 @@ router
 
         //if checked through and all invalid document
         if (errRecordCounter === (colSeparated.length - 1)) {
-            console.log("Invalid CSV file - all rows skipped");
-            res.status(400).json("Invalid CSV file");
+            console.log("Error: Invalid CSV file - all rows skipped");
+            res.status(400).json("Error: Invalid CSV file");
             return;
         }
 
@@ -391,7 +391,7 @@ router
                     })
                 }
                 else {
-                    res.status(400).json("Invalid request");
+                    res.status(400).json("Error: Invalid request");
                     return;
                 }
 
