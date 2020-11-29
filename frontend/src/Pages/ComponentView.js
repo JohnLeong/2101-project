@@ -17,6 +17,7 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import EditIcon from '@material-ui/icons/Create'
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
@@ -148,6 +149,7 @@ function EnhancedTableHead(props) {
           ))}
           <StyledTableCell padding="checkbox">
             <Checkbox
+              style={{color: 'white'}}
               indeterminate={numSelected > 0 && numSelected < rowCount}
               checked={rowCount > 0 && numSelected === rowCount}
               onChange={onSelectAllClick}
@@ -200,7 +202,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function TableList() {
+export default function ComponentView() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
@@ -283,7 +285,7 @@ export default function TableList() {
           onClick={importClick}
           type="submit"
           variant="contained"
-          tabindex="0"
+          tabIndex="0"
           style={{backgroundColor: '#3d3d3d'}}>Import Marks</Button>
 
           <input type="file" name="file"
@@ -292,8 +294,8 @@ export default function TableList() {
             onChange={importChange}
             style={{ display: 'none' }} />
         </Fragment>
-        <Button tabindex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
-          <span class="MuiButton-label">Add Comment</span><span class="MuiTouchRipple-root"></span>
+        <Button tabIndex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
+          <span className="MuiButton-label">Add Comment</span><span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
       <Paper className={classes.paper}>
@@ -325,7 +327,7 @@ export default function TableList() {
                     >
                       {/********************* INPUT CELL DATA *********************/}
                       <StyledTableCell>
-                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(open == index ? -1 : index)}>
+                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(open === index ? -1 : index)}>
                           {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                       </StyledTableCell>
@@ -334,13 +336,12 @@ export default function TableList() {
                       <StyledTableCell align="left">{row.name}</StyledTableCell>
                       <StyledTableCell align="left">{row.grade}</StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button color="success"  tabindex="0" type="button">
-                          <span class="MuiButton-label">Add/Edit Comments</span><span class="MuiTouchRipple-root"></span>
+                        <Button color="success"  tabIndex="0" type="button">
+                          <span className="MuiButton-label">Add/Edit Comments</span><span className="MuiTouchRipple-root"></span>
                         </Button>
                       </StyledTableCell>
                       <StyledTableCell padding="checkbox">
                         <Checkbox
-                          hover
                           onClick={(event) => handleClick(event, row.studentID)}
                           role="checkbox"
                           aria-checked={isItemSelected}
@@ -359,8 +360,9 @@ export default function TableList() {
                             <Table size="small" aria-label="Subcomponent information">
                               <TableHead>
                                 <TableRow>
-                                  <TableCell>Subcomponent Name</TableCell>
-                                  <TableCell>Mark</TableCell>
+                                  <TableCell style={{fontWeight: '700'}}>Subcomponent Name</TableCell>
+                                  <TableCell style={{fontWeight: '700'}}>Mark</TableCell>
+                                  <TableCell></TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -370,6 +372,7 @@ export default function TableList() {
                                       {scRow.sc}
                                     </TableCell>
                                     <TableCell>{scRow.marks}</TableCell>
+                                    <TableCell style={{cursor: 'pointer'}}><EditIcon /></TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
