@@ -50,15 +50,6 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 /********************************** ROW DATA **********************************/
-function createData(studentID, name, grade, rank) {
-  return { studentID, 
-    name, 
-    grade, 
-    rank
-  };
-}
-
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -94,7 +85,7 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -203,6 +194,7 @@ export default function ClassList() {
 
   return (
     <div className={classes.root}>
+      <div><h3>Class Name Here</h3></div>
       <Paper className={classes.paper}>
         <TableContainer>
           <Table
