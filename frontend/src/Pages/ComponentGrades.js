@@ -294,7 +294,7 @@ export default function ComponentView() {
           type="submit"
           variant="contained"
           tabIndex="0"
-          style={{backgroundColor: '#3d3d3d'}}>Import Marks</Button>
+          style={{ margin:'10px', backgroundColor: '#139DAE'}}>Import Marks</Button>
 
           <input type="file" name="file"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
@@ -302,7 +302,7 @@ export default function ComponentView() {
             onChange={importChange}
             style={{ display: 'none' }} />
         </Fragment>
-        <Button onClick = {() => setOpenAddPopup(true)} tabIndex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
+        <Button onClick = {() => setOpenAddPopup(true)} tabIndex="0" type="button" style={{backgroundColor: '#139DAE'}}>
           <span className="MuiButton-label">Add Comment</span><span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
@@ -344,8 +344,8 @@ export default function ComponentView() {
                       <StyledTableCell align="left">{row.name}</StyledTableCell>
                       <StyledTableCell align="left">{row.grade}</StyledTableCell>
                       <StyledTableCell align="center">
-                      <Button onClick = {() => setOpenEditPopup(true)} color="success"  tabIndex="0" type="button">
-                          <span className="MuiButton-label">Add/Edit Comments</span><span className="MuiTouchRipple-root"></span>
+                      <Button onClick = {() => setOpenEditPopup(true)} style={{backgroundColor: '#C36A33'}}  tabIndex="0" type="button">
+                          <span className="MuiButton-label">Edit Comments</span><span className="MuiTouchRipple-root"></span>
                         </Button>
                       </StyledTableCell>
                       <StyledTableCell padding="checkbox">
@@ -407,17 +407,17 @@ export default function ComponentView() {
         />
       </Paper>
       <Dialog open = {openAddPopup} maxWidth = "md" fullWidth = {true}>
-            <DialogTitle>
+      <DialogTitle>
               <span>
-              <span>&nbsp; Add Comment</span>
-                    <span>
+              <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginLeft:"7px"}}> Add Comment</span>
+                    <span style={{marginLeft:"20px"}}>
                     <Controls.ActionButton onClick = {() => setOpenAddPopup(false)} color="secondary" >
                       <CloseIcon fontSize="small" />
                     </Controls.ActionButton>
                     </span>
                     
                 </span>
-            </DialogTitle>    
+            </DialogTitle> 
             <DialogContent>
             <Form>
             <Grid container>
@@ -436,7 +436,8 @@ export default function ComponentView() {
                     <div>
                         <Controls.Button
                             type="submit"
-                            text="Submit" />
+                            text="Submit"
+                             />
                         <Controls.Button
                             text="Reset"
                             color="default" />
@@ -444,14 +445,14 @@ export default function ComponentView() {
                 </Grid>
             </Grid>
         </Form>
-                  
             </DialogContent>
         </Dialog>
+        {/* END OF ADD COMMENTS FORM */}
         <Dialog open = {openEditPopup} maxWidth = "md" fullWidth = {true}>
             <DialogTitle>
               <span>
-                <span>&nbsp;Edit Comment</span>
-                <span>
+                <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginLeft:"0px"}}>&nbsp;Edit Comment</span>
+                <span style={{marginLeft:"20px"}}>
                     <Controls.ActionButton  onClick = {() => setOpenEditPopup(false)}  color="secondary" >
                       <CloseIcon fontSize="small" />
 

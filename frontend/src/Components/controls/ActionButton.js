@@ -7,7 +7,9 @@ const useStyles = makeStyles(theme => ({
     root: {
         minWidth: 0,
         margin: theme.spacing(0.5),
-        marginLeft: '700px',
+        marginTop:'15px',
+        marginLeft: '535px',
+        
     },
     secondary: {
         backgroundColor: theme.palette.secondary.light,
