@@ -24,6 +24,87 @@ router
       .catch((err) => res.status(400).json("Error: " + err));
   });
 
+//Route: GET ...url.../component/lecturer/<componentId>
+//Roles: Lecturer
+//Lecturer class view
+//List of students 
+router
+.route("/lecturer/:componentId")
+.all(authenticateJWT([1]))
+.get(async (req, res) => {
+  try {
+    //Find module
+    const module = await Module.findOne({
+      components: req.params.componentId,
+    }).exec();
+
+    //Find classes lecturer teaches
+    const moduleClasses = await ModuleClass.find({
+      _id: { $in: module.classes },
+      lecturers: req.user.userId,
+    }).populate("students").exec();
+
+
+
+    //Find component, populate subcomponent
+    const component = await Component.findById(req.params.componentId).populate("subcomponents").populate("comments").exec();
+
+    //Calculate maximum marks
+    let maximumMarks = 0;
+    component.subcomponents.forEach((sc) => {
+      maximumMarks += sc.weightage * 100;
+    });
+
+    //For each moduleClass, For each student, look through each subcomponent for their marks
+    let studentResults = []
+    moduleClasses.forEach((moduleClass) => {
+      moduleClass.students.forEach((s) => {
+        let subcomponentResults = [];
+        let commentResults = [];
+        let totalMarks = 0;
+        let grade = 'F';
+
+        //Look for subcomponent marks
+        component.subcomponents.forEach((sc) => {
+          const marks = sc.studentMarks.get(s._id.toString());
+          if (typeof marks !== "undefined") {
+            totalMarks += marks * sc.weightage;
+            subcomponentResults.push({sc: sc.name, marks: marks});
+          } else {
+            subcomponentResults.push({sc: sc.name, marks: 0});
+          }
+        });
+
+        //Calculate grade
+        const marksPercentage = totalMarks / maximumMarks * 100;
+        if (marksPercentage >= 84) grade = "A";
+        else if (marksPercentage >= 67) grade = "B";
+        else if (marksPercentage >= 57) grade = "C";
+        else if (marksPercentage >= 47) grade = "D";
+        else if (marksPercentage >= 37) grade = "E";
+        else grade = "F";
+
+        //Look for comments
+        component.comments.forEach((c) => {
+          if (c.studentId.toString() == s._id.toString()){
+            commentResults.push(c);
+          }
+        });
+
+
+        //studentID, classgroup,  name, grade, comment, subcomponent: [{sc: s, marks: m}],
+        studentResults.push({id: s.email, classGroup: moduleClass.name, name: s.name, grade: grade, comments: commentResults, subcomponents: subcomponentResults});
+      });
+    });
+
+
+    res.json(studentResults);
+
+  } catch (err) {
+    (err) => res.status(400).json("Error: " + err);
+  }
+});
+
 //Route: GET ...url.../component/lecturer/grades/<componentId>
 //Roles: Lecturer
 //Gets the grades and standings of students in this lecturer's classes
@@ -297,6 +378,18 @@ router.route("/:id").delete((req, res) => {
 //   } catch (err) {
 //     res.status(400).json("Error: " + err);
 //   }
+// });
+
+// router
+// .route("/addstudentid/adding")
+// .get(async (req, res) => {
+//   const students = await User.find({role: 2}).exec();
+//   students.forEach(async (s) => {
+//     console.log(s.id);
+//     await User.updateMany({ _id: s.id }, { studentId: 1900000 }).exec();
+//   });
+
+//   res.json(students.length);
 // });
 
 export default router;
