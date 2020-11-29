@@ -20,8 +20,9 @@ import Dashboard from "@material-ui/icons/Dashboard";
 // core components/views for Admin layout
 import DashboardPage from "./Pages/Dashboard.js";
 import ComponentView from "./Pages/ComponentView.js";
+import ComponentGrades from "./Pages/ComponentGrades.js";
 import ClassView from "./Pages/ClassView.js"
-import ClassList from "./Pages/ClassGrades";
+import ClassGrades from "./Pages/ClassGrades";
 
 //External endpoints (backend)
 export const backendUrl = "http://localhost:5000/";
@@ -54,10 +55,18 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/componentgrades",
+    path: "/componentview",
     name: "Component View",
     icon: "content_paste",
     component: ComponentView,
+    layout: "/admin",
+    hidden: true,
+  },
+  {
+    path: "/componentgrades",
+    name: "Component Grades",
+    icon: "content_paste",
+    component: ComponentGrades,
     layout: "/admin",
     hidden: true,
   },
@@ -73,7 +82,7 @@ const dashboardRoutes = [
     path: "/classgrades/:classId",
     name: "Classes grades",
     icon: "content_paste",
-    component: ClassList,
+    component: ClassGrades,
     layout: "/admin",
     hidden: true,
   },

@@ -2,12 +2,6 @@ import React, { Fragment, useState } from "react";
 import ComponentUI from "../Boundaries/ComponentUI"
 // core components
 import Button from "../Components/CustomButtons/Button.js";
-//FORM
-import { Dialog, DialogTitle, DialogContent } from '@material-ui/core'
-import { Form } from '../Components/useForm';
-import Controls from "../Components/controls/Controls.js";
-import { Grid, } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
 // @material-ui/core components
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
@@ -20,10 +14,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
-import Checkbox from '@material-ui/core/Checkbox';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import EditIcon from '@material-ui/icons/Create'
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
@@ -64,26 +56,19 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 /********************************** ROW DATA **********************************/
-function createData(studentID, classgroup, name, grade, comment, s, m) {
-  return { studentID, 
-    classgroup, 
-    name, 
-    grade, 
-    comment,
-    subcomponent: [{sc: s, marks: m}],
+function createData(component, weightage, s, w) {
+  return { 
+    component, 
+    weightage, 
+    subcomponent: [{sc: s, weight: w}],
     open:false
   };
 }
 
 const rows = [
-  createData('1902123', 'P1', 'DONNY YEN', 'A', '', 'Quiz 1', '1' ),
-  createData('1902345', 'P2', 'HAPPY ME', 'F', '', 'Quiz 1', '2'),
-  createData('1902456', 'P1', 'ALEX CHEN', 'B', '', 'Quiz 1', '3'),
-  createData('1906123', 'P3', 'HUMPTY', 'B+', '', 'Quiz 1', '4'),
-  createData('1906433', 'P3', 'DUMPTY', 'B', '', 'Quiz 1', '5'),
-  createData('1906653', 'P2', 'HEHE', 'D', '', 'Quiz 1', '6'),
+  createData('Quiz', '40%','Quiz 1', '10%' ),
+  createData('Project', '20%', 'Project 1', '20%'),
 ];
-
 
 
 function descendingComparator(a, b, orderBy) {
@@ -116,15 +101,13 @@ function stableSort(array, comparator) {
 /********************************** TABLE HEAD **********************************/
 const headCells = [
   { id: 'collapse', numeric: false, disablePadding: false, label: '' },
-  { id: 'studentID', numeric: false, disablePadding: true, label: 'Student ID' },
-  { id: 'classgroup', numeric: false, disablePadding: false, label: 'Class' },
-  { id: 'name', numeric: true, disablePadding: false, label: 'Full Name' },
-  { id: 'grade', numeric: true, disablePadding: false, label: 'Grade' },
-  { id: 'comment', numeric: false, disablePadding: false, label: 'Comments' },
+  { id: 'component', numeric: false, disablePadding: true, label: 'Component' },
+  { id: 'weightage', numeric: false, disablePadding: false, label: 'Weightage' },
+  { id: 'edit', numeric: false, disablePadding: false, label: '' },
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -153,15 +136,6 @@ function EnhancedTableHead(props) {
               </StyledTableSortLabel>
             </StyledTableCell>
           ))}
-          <StyledTableCell padding="checkbox">
-            <Checkbox
-              style={{color: 'white'}}
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={rowCount > 0 && numSelected === rowCount}
-              onChange={onSelectAllClick}
-              inputProps={{ 'aria-label': 'select all students to input comments' }}
-            />
-          </StyledTableCell>
         </StyledTableRow>
         
       </TableHead>
@@ -212,46 +186,14 @@ export default function ComponentView() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
-  const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(-1);
-  const  [openAddPopup, setOpenAddPopup] = useState(false);
-  const  [openEditPopup, setOpenEditPopup] = useState(false);
   
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
-  };
-
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.studentID);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),  
-      );
-    }
-
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -263,47 +205,12 @@ export default function ComponentView() {
     setPage(0);
   };
 
-
-  const isSelected = (name) => selected.indexOf(name) !== -1;
-
-  /****************** IMPORT MARKS ******************/
-  const [submitting, setSubmitting] = useState(false);
-
-  //Source: https://masakudamatsu.medium.com/how-to-customize-the-file-upload-button-in-react-b3866a5973d8
-  // Create a reference to the hidden file input element
-  const hiddenFileInput = React.useRef(null);
-
-  // programatically click hidden file input element
-  // when the Button is clicked
-  const importClick = event => {
-    hiddenFileInput.current.click();
-  };
-
-  // handle the user-selected file 
-  const importChange = async (event) => {
-    await ComponentUI.displayFileDialog(event, [submitting, setSubmitting], "5f8ed1b166ea0039a87b3bf3");
-  };
-
   /****************** RETURN HTML ******************/
   return (
     <div className={classes.root}>
       <div className={classes.buttonDiv}>
-        <Fragment>
-          <Button
-          onClick={importClick}
-          type="submit"
-          variant="contained"
-          tabIndex="0"
-          style={{backgroundColor: '#3d3d3d'}}>Import Marks</Button>
-
-          <input type="file" name="file"
-            accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-            ref={hiddenFileInput}
-            onChange={importChange}
-            style={{ display: 'none' }} />
-        </Fragment>
-        <Button onClick = {() => setOpenAddPopup(true)} tabindex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
-          <span className="MuiButton-label">Add Comment</span><span className="MuiTouchRipple-root"></span>
+        <Button tabIndex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
+          <span className="MuiButton-label">Add/Edit Component</span><span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
       <Paper className={classes.paper}>
@@ -315,10 +222,8 @@ export default function ComponentView() {
           >
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
@@ -326,8 +231,6 @@ export default function ComponentView() {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.studentID);
-                  const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <React.Fragment>
@@ -339,26 +242,12 @@ export default function ComponentView() {
                           {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                       </StyledTableCell>
-                      <StyledTableCell align="center">{row.studentID}</StyledTableCell>
-                      <StyledTableCell align="center">{row.classgroup}</StyledTableCell>
-                      <StyledTableCell align="left">{row.name}</StyledTableCell>
-                      <StyledTableCell align="left">{row.grade}</StyledTableCell>
+                      <StyledTableCell align="center">{row.component}</StyledTableCell>
+                      <StyledTableCell align="center">{row.weightage}</StyledTableCell>
                       <StyledTableCell align="center">
-                      <Button onClick = {() => setOpenEditPopup(true)} color="success"  tabindex="0" type="button">
-                          <span className="MuiButton-label">Add/Edit Comments</span><span className="MuiTouchRipple-root"></span>
+                      <Button color="success"  tabIndex="0" type="button">
+                          <span className="MuiButton-label">Add/Edit Subcomponents</span><span className="MuiTouchRipple-root"></span>
                         </Button>
-                      </StyledTableCell>
-                      <StyledTableCell padding="checkbox">
-                        <Checkbox
-                          onClick={(event) => handleClick(event, row.studentID)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.studentID}
-                          selected={isItemSelected}
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
                       </StyledTableCell>
                     </StyledTableRow>
                     <TableRow>
@@ -369,8 +258,7 @@ export default function ComponentView() {
                               <TableHead>
                                 <TableRow>
                                   <TableCell style={{fontWeight: '700'}}>Subcomponent Name</TableCell>
-                                  <TableCell style={{fontWeight: '700'}}>Mark</TableCell>
-                                  <TableCell></TableCell>
+                                  <TableCell style={{fontWeight: '700'}}>Weightage</TableCell>
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -379,8 +267,7 @@ export default function ComponentView() {
                                     <TableCell component="th" scope="row">
                                       {scRow.sc}
                                     </TableCell>
-                                    <TableCell>{scRow.marks}</TableCell>
-                                    <TableCell style={{cursor: 'pointer'}}><EditIcon /></TableCell>
+                                    <TableCell>{scRow.weight}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -406,101 +293,6 @@ export default function ComponentView() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <Dialog open = {openAddPopup} maxWidth = "md" fullWidth = {true}>
-            <DialogTitle>
-              <span>
-              <span>&nbsp; Add Comment</span>
-                    <span>
-                    <Controls.ActionButton onClick = {() => setOpenAddPopup(false)} color="secondary" >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    </span>
-                    
-                </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
-            <Grid container>
-                <Grid item xs={6}> 
-                    <Controls.Input
-                        label = "Student ID:"
-                        value="1902758, 1906512"
-                        disabled
-                        name="StudentId"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Enter Comments Here"
-                        rows = {20}
-                    />
-                    <div>
-                        <Controls.Button
-                            type="submit"
-                            text="Submit" />
-                        <Controls.Button
-                            text="Reset"
-                            color="default" />
-                    </div>
-                </Grid>
-            </Grid>
-        </Form>
-                  
-            </DialogContent>
-        </Dialog>
-        <Dialog open = {openEditPopup} maxWidth = "md" fullWidth = {true}>
-            <DialogTitle>
-              <span>
-                <span>&nbsp;Edit Comment</span>
-                <span>
-                    <Controls.ActionButton  onClick = {() => setOpenEditPopup(false)}  color="secondary" >
-                      <CloseIcon fontSize="small" />
-
-                    </Controls.ActionButton>
-                    </span>
-                    </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
-            <Grid container>
-                <Grid item xs={6}> 
-                    
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <div>
-                        <Controls.Button
-                            type="submit"
-                            text="Submit" />
-                        <Controls.Button
-                            text="Reset"
-                            color="default" />
-                    </div>
-                </Grid>
-            </Grid>
-        </Form>
-            </DialogContent>
-        </Dialog>
     </div>
     );
   }
