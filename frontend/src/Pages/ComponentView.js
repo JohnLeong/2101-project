@@ -325,7 +325,7 @@ export default function TableList() {
                     >
                       {/********************* INPUT CELL DATA *********************/}
                       <StyledTableCell>
-                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(index)}>
+                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(open == index ? -1 : index)}>
                           {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                       </StyledTableCell>

@@ -79,7 +79,7 @@ export default function Dashboard() {
                 key={module._id}
                 onClick={() => navigateToModule(module._id)}
               >
-                <Card chart>
+                <Card chart style={{marginBottom: 0, cursor: 'pointer'}}>
                   <img src={module1} height="280" alt="Module 1" />
                   <CardBody>
                     <h4 className={classes.cardTitle}>ICT 2x01</h4>
