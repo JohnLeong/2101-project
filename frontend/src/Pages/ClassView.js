@@ -45,6 +45,7 @@ export default function Dashboard() {
 
   return (
     <div className={classes.root}>
+      <div><h3>Component Name Here</h3></div>
       <GridContainer>
         {moduleclasses == null ? (
           <p key="loading">Loading</p>

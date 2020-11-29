@@ -14,9 +14,9 @@ import Cookies from "js-cookie";
 import styles from "../assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
 // Images
-import module1 from "../assets/img/Module1.jpg";
-// import module2 from "../assets/img/Module2.jpg";
-// import module3 from "../assets/img/Module3.jpeg";
+import image1 from "../assets/img/Module1.jpg";
+// import image2 from "../assets/img/Module2.jpg";
+// import image3 from "../assets/img/Module3.jpeg";
 import { getUserModulesUrl } from "../routes.js";
 
 import "../App.css";
@@ -26,7 +26,7 @@ const useStyles = makeStyles(styles);
 export default function Dashboard() {
   const classes = useStyles();
   const history = useHistory();
-
+  const MAX_LENGTH = 100;                                     // Max char length of module description displayed
   const [moduleData, setModuleData] = React.useState(null);
 
   React.useEffect(() => {
@@ -66,12 +66,12 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* MODULE 1 */}
       <GridContainer>
         {moduleData == null ? (
           <p key="loading">Loading</p>
         ) : (
           moduleData.map((module) => (
+              // Each Module Item 
               <GridItem
                 xs={12}
                 sm={12}
@@ -80,44 +80,18 @@ export default function Dashboard() {
                 onClick={() => navigateToModule(module._id)}
               >
                 <Card chart style={{marginBottom: 0, cursor: 'pointer'}}>
-                  <img src={module1} height="280" alt="Module 1" />
-                  <CardBody>
-                    <h4 className={classes.cardTitle}>ICT 2x01</h4>
-                    <p className={classes.cardCategory}>{module.name}</p>
+                  <img src={image1} height="280px" alt="Module 1" />
+                  <CardBody style={{height:'150px'}}>
+                    <h4 className={classes.cardTitle}>{module.name}</h4>
+                    {module.description.length > MAX_LENGTH ? ( 
+                      <p className={classes.cardCategory}>{`${module.description.substring(0, MAX_LENGTH)}...`}</p>
+                    ): <p></p>
+                    }
                   </CardBody>
                 </Card>
               </GridItem>
           ))
         )}
-        {/* <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <img src={module1} height="280" alt="Module 1" />
-            <CardBody>
-              <h4 className={classes.cardTitle}>ICT 2x01</h4>
-              <p className={classes.cardCategory}>
-                Intro to Software Engineering
-              </p>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <img src={module2} height="280" alt="Module 2" />
-            <CardBody>
-              <h4 className={classes.cardTitle}>ICT 2202</h4>
-              <p className={classes.cardCategory}>Digital Forensics</p>
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={4}>
-          <Card chart>
-            <img src={module3} height="280" alt="Module 3" />
-            <CardBody>
-              <h4 className={classes.cardTitle}>ICT 2203</h4>
-              <p className={classes.cardCategory}>Network Security</p>
-            </CardBody>
-          </Card>
-        </GridItem> */}
       </GridContainer>
     </div>
   );
