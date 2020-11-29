@@ -2,6 +2,12 @@ import React, { Fragment, useState } from "react";
 import ComponentUI from "../Boundaries/ComponentUI"
 // core components
 import Button from "../Components/CustomButtons/Button.js";
+//FORM
+import { Dialog, DialogTitle, DialogContent } from '@material-ui/core'
+import { Form } from '../Components/useForm';
+import Controls from "../Components/controls/Controls.js";
+import { Grid, } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 // @material-ui/core components
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import PropTypes from 'prop-types';
@@ -210,7 +216,9 @@ export default function ComponentView() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(-1);
-
+  const  [openAddPopup, setOpenAddPopup] = useState(false);
+  const  [openEditPopup, setOpenEditPopup] = useState(false);
+  
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -294,7 +302,7 @@ export default function ComponentView() {
             onChange={importChange}
             style={{ display: 'none' }} />
         </Fragment>
-        <Button tabIndex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
+        <Button onClick = {() => setOpenAddPopup(true)} tabindex="0" type="button" style={{backgroundColor: '#3d3d3d'}}>
           <span className="MuiButton-label">Add Comment</span><span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
@@ -336,7 +344,7 @@ export default function ComponentView() {
                       <StyledTableCell align="left">{row.name}</StyledTableCell>
                       <StyledTableCell align="left">{row.grade}</StyledTableCell>
                       <StyledTableCell align="center">
-                        <Button color="success"  tabIndex="0" type="button">
+                      <Button onClick = {() => setOpenEditPopup(true)} color="success"  tabindex="0" type="button">
                           <span className="MuiButton-label">Add/Edit Comments</span><span className="MuiTouchRipple-root"></span>
                         </Button>
                       </StyledTableCell>
@@ -398,6 +406,101 @@ export default function ComponentView() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
+      <Dialog open = {openAddPopup} maxWidth = "md" fullWidth = {true}>
+            <DialogTitle>
+              <span>
+              <span>&nbsp; Add Comment</span>
+                    <span>
+                    <Controls.ActionButton onClick = {() => setOpenAddPopup(false)} color="secondary" >
+                      <CloseIcon fontSize="small" />
+                    </Controls.ActionButton>
+                    </span>
+                    
+                </span>
+            </DialogTitle>    
+            <DialogContent>
+            <Form>
+            <Grid container>
+                <Grid item xs={6}> 
+                    <Controls.Input
+                        label = "Student ID:"
+                        value="1902758, 1906512"
+                        disabled
+                        name="StudentId"
+                    />
+                    <Controls.InputLarge
+                        name="CommentId"
+                        label="Enter Comments Here"
+                        rows = {20}
+                    />
+                    <div>
+                        <Controls.Button
+                            type="submit"
+                            text="Submit" />
+                        <Controls.Button
+                            text="Reset"
+                            color="default" />
+                    </div>
+                </Grid>
+            </Grid>
+        </Form>
+                  
+            </DialogContent>
+        </Dialog>
+        <Dialog open = {openEditPopup} maxWidth = "md" fullWidth = {true}>
+            <DialogTitle>
+              <span>
+                <span>&nbsp;Edit Comment</span>
+                <span>
+                    <Controls.ActionButton  onClick = {() => setOpenEditPopup(false)}  color="secondary" >
+                      <CloseIcon fontSize="small" />
+
+                    </Controls.ActionButton>
+                    </span>
+                    </span>
+            </DialogTitle>    
+            <DialogContent>
+            <Form>
+            <Grid container>
+                <Grid item xs={6}> 
+                    
+                    <Controls.InputLarge
+                        name="CommentId"
+                        label="Edit Comments Here"
+                        rows = {5}
+                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                    />
+                    <Controls.InputLarge
+                        name="CommentId"
+                        label="Edit Comments Here"
+                        rows = {5}
+                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                    />
+                    <Controls.InputLarge
+                        name="CommentId"
+                        label="Edit Comments Here"
+                        rows = {5}
+                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                    />
+                    <Controls.InputLarge
+                        name="CommentId"
+                        label="Edit Comments Here"
+                        rows = {5}
+                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                    />
+                    <div>
+                        <Controls.Button
+                            type="submit"
+                            text="Submit" />
+                        <Controls.Button
+                            text="Reset"
+                            color="default" />
+                    </div>
+                </Grid>
+            </Grid>
+        </Form>
+            </DialogContent>
+        </Dialog>
     </div>
     );
   }
