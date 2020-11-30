@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
@@ -54,6 +55,7 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
     {
         base.Awake();
 
+        Debug.Log("GamificationManager created");
         LoadStudentDetails();
     }
 
@@ -79,7 +81,7 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
         for (int i = 0; i < component.SubComponents.Count; ++i)
         {
             SubComponent subComponent = component.SubComponents[i];
-            int subComponentHeight = Mathf.Max(1, (int)(((float)subComponent.Marks / subComponent.TotalMarks) * maxSubcomponentHeight));
+            int subComponentHeight = Mathf.Max(1, (int)(((float)subComponent.Marks / 100) * maxSubcomponentHeight));
             missingHeight += maxSubcomponentHeight - subComponentHeight;
 
             GameObject subComponentObject = new GameObject("Subcomponent: " + subComponent.Name);
@@ -251,5 +253,10 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
             }
         }
         GenerateBuildings();
+    }
+
+    public void BackToModules()
+    {
+        SceneManager.LoadScene("SceneModule");
     }
 }

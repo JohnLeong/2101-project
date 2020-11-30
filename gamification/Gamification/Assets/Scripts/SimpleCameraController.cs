@@ -76,6 +76,8 @@ namespace UnityTemplateProjects
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
         public bool invertY = false;
 
+        public float mouseSensitivityMod = 0.5f;
+
         void OnEnable()
         {
             m_TargetCameraState.SetFromTransform(transform);
@@ -116,6 +118,15 @@ namespace UnityTemplateProjects
         {
             Vector3 translation = Vector3.zero;
 
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                mouseSensitivityMod = 1.0f;
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+                mouseSensitivityMod = 0.5f;
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+                mouseSensitivityMod = 0.25f;
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+                mouseSensitivityMod = 0.1f;
+
 #if ENABLE_LEGACY_INPUT_MANAGER
 
             // Exit Sample  
@@ -144,7 +155,7 @@ namespace UnityTemplateProjects
             {
                 var mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y") * (invertY ? 1 : -1));
                 
-                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(mouseMovement.magnitude);
+                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(mouseMovement.magnitude) * mouseSensitivityMod;
 
                 m_TargetCameraState.yaw += mouseMovement.x * mouseSensitivityFactor;
                 m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
