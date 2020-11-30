@@ -238,6 +238,56 @@ router
     }
   });
 
+//Route: GET ...url.../component/lecturer/<componentId>/<studentId>
+//Roles: Lecturer
+//check if component isComplete based on componentId and studentId
+router
+  .route("/lecturer/:componentId/:studentId")
+  .all(authenticateJWT([1]))
+  .get((req, res) => {
+    const studentId = req.params.studentId;
+    //query component with subcomponents
+    Component.findById(req.params.componentId)
+    .populate("subcomponents")
+    .exec()
+    .then((component) => {
+      //if no document returned
+      if (!component) {
+        res.status(400).json("Error: Invalid component id");
+        return;
+      }
+
+      //check through each subcomponent
+      let completeCount = 0;
+      for (let index = 0; index < component["subcomponents"].length; ++index) {
+        let boolFound = false;
+        const studentMarks = component["subcomponents"][index]["studentMarks"];
+        if (studentMarks != null) {
+          //check through each subcomponent's studentMarks
+          studentMarks.forEach(function (value, key) {
+            if(key === studentId){
+              boolFound = true;
+            }
+          })
+          if(boolFound){
+            ++completeCount;
+          }
+        }
+      }
+      //check if marks has been entered for all subcomponent
+      if(completeCount === component["subcomponents"].length){
+        //isComplete
+        res.json(1);
+      }
+      else {
+        //!isComplete
+        res.json(0);
+      }
+    })
+    .catch((err) => res.status(400).json("Error: " + err));
+});
+
+
 //Route: POST ...url.../component/new/<moduleId>
 //Roles: Lecturer
 //Add a new component
