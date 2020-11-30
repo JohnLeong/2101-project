@@ -373,69 +373,6 @@ export default function ComponentView() {
                       />
                     </span>
                 </span>
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Name"
-                          placeholder="eg: Lab Quizzes, Final Exam, etc"
-                          name="ComponentId"
-                          row = "1"
-                          style = {{width: 450, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Type"
-                          placeholder="eg: Test, Project, Quiz, etc"
-                          name="ComponentType"
-                          row = "1"
-                          style = {{width: 230, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "Component Weight"
-                          placeholder="eg: 10%, 20%, etc"
-                          name="ComponentWeight"
-                          row = "1"
-                          style = {{width: 160, marginBottom:10}}
-                      />
-                    </span>
-                </span>
-                
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Name"
-                          placeholder="eg: Lab Quizzes, Final Exam, etc"
-                          name="ComponentId"
-                          row = "1"
-                          style = {{width: 450, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Type"
-                          placeholder="eg: Test, Project, Quiz, etc"
-                          name="ComponentType"
-                          row = "1"
-                          style = {{width: 230, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "Component Weight"
-                          placeholder="eg: 10%, 20%, etc"
-                          name="ComponentName"
-                          row = "1"
-                          style = {{width: 160, marginBottom:10}}
-                      />
-                    </span>
-                </span>
                 <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
                   <Controls.Button
                       type="submit"
@@ -446,6 +383,7 @@ export default function ComponentView() {
                       color="default" />
                 </div>
                 </Grid>
+                
             </Grid>
         </Form>
 
@@ -498,69 +436,6 @@ export default function ComponentView() {
                       />
                     </span>
                 </span>
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Name"
-                          defaultValue = "Practical Test 1"
-                          name="ComponentID"
-                          row = "1"
-                          style = {{width: 450, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Type"
-                          defaultValue = "Practical Test"
-                          name="StudentId"
-                          row = "1"
-                          style = {{width: 230, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "Component Weight"
-                          defaultValue = "20%"
-                          name="StudentId"
-                          row = "1"
-                          style = {{width: 160, marginBottom:10}}
-                      />
-                    </span>
-                </span>
-                
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Name"
-                          defaultValue = "Final Exam"
-                          name="ComponentID"
-                          row = "1"
-                          style = {{width: 450, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Type"
-                          defaultValue = "Exam"
-                          name="ComponentType"
-                          row = "1"
-                          style = {{width: 230, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "Component Weight"
-                          defaultValue = "50%"
-                          name="ComponentWeight"
-                          row = "1"
-                          style = {{width: 160, marginBottom:10}}
-                      />
-                    </span>
-                </span>
                 <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
                   <Controls.Button
                       type="submit"
@@ -571,6 +446,7 @@ export default function ComponentView() {
                       color="default" />
                 </div>
                 </Grid>
+                
             </Grid>
         </Form>
 
@@ -623,69 +499,6 @@ export default function ComponentView() {
                       />
                     </span>
                 </span>
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Name"
-                          placeholder="eg: Lab Quizzes, Final Exam, etc"
-                          name="SubComponentId"
-                          row = "1"
-                          style = {{width: 430, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Type"
-                          placeholder="eg: Test, Project, Quiz, etc"
-                          name="SubComponentType"
-                          row = "1"
-                          style = {{width: 220, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "SubComponent Weight"
-                          placeholder="eg: 10%, 20%, etc"
-                          name="SubComponentWeight"
-                          row = "1"
-                          style = {{width: 190, marginBottom:10}}
-                      />
-                    </span>
-                </span>
-                
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Name"
-                          placeholder="eg: Lab Quizzes, Final Exam, etc"
-                          name="SubComponentId"
-                          row = "1"
-                          style = {{width: 430, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Type"
-                          placeholder="eg: Test, Project, Quiz, etc"
-                          name="SubComponentType"
-                          row = "1"
-                          style = {{width: 220, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "SubComponent Weight"
-                          placeholder="eg: 10%, 20%, etc"
-                          name="SubComponentName"
-                          row = "1"
-                          style = {{width: 190, marginBottom:10}}
-                      />
-                    </span>
-                </span>
                 <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
                   <Controls.Button
                       type="submit"
@@ -696,6 +509,7 @@ export default function ComponentView() {
                       color="default" />
                 </div>
                 </Grid>
+                
             </Grid>
         </Form>
 
@@ -748,69 +562,6 @@ export default function ComponentView() {
                       />
                     </span>
                 </span>
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Name"
-                          defaultValue = "Practical Test 1"
-                          name="SubComponentID"
-                          row = "1"
-                          style = {{width: 430, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Type"
-                          defaultValue = "Practical Test"
-                          name="SubComponentType"
-                          row = "1"
-                          style = {{width: 220, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "SubComponent Weight"
-                          defaultValue = "20%"
-                          name="SubComponentWeight"
-                          row = "1"
-                          style = {{width: 190, marginBottom:10}}
-                      />
-                    </span>
-                </span>
-                
-                </Grid>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Name"
-                          defaultValue = "Final Exam"
-                          name="SubComponentID"
-                          row = "1"
-                          style = {{width: 430, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Type"
-                          defaultValue = "Exam"
-                          name="SubComponentType"
-                          row = "1"
-                          style = {{width: 220, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "SubComponent Weight"
-                          defaultValue = "50%"
-                          name="SubComponentWeight"
-                          row = "1"
-                          style = {{width: 190, marginBottom:10}}
-                      />
-                    </span>
-                </span>
                 <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
                   <Controls.Button
                       type="submit"
@@ -821,6 +572,7 @@ export default function ComponentView() {
                       color="default" />
                 </div>
                 </Grid>
+                
             </Grid>
         </Form>
 
