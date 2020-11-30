@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import ComponentUI from "../Boundaries/ComponentUI"
+import { useHistory, useParams } from 'react-router-dom';
 // core components
 import Button from "../Components/CustomButtons/Button.js";
 //FORM
@@ -25,6 +26,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
+import ComponentManagement from "../Control/ComponentManagement";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -71,7 +73,7 @@ function createData(component, weightage, s, w) {
   };
 }
 
-const rows = [
+const rowsOld = [
   createData('Quiz', '40%','Quiz 1', '10%' ),
   createData('Project', '20%', 'Project 1', '20%'),
 ];
@@ -199,6 +201,9 @@ export default function ComponentView() {
   const  [openEditComponentPopup, setOpenEditComponentPopup] = useState(false);
   const  [openAddSubcomponentPopup, setOpenAddSubcomponentPopup] = useState(false);
   const  [openEditSubcomponentPopup, setOpenEditSubcomponentPopup] = useState(false);
+  const [rows, setRows] = useState([]);
+  const { moduleId } = useParams();
+  const history = useHistory();
   
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -215,6 +220,18 @@ export default function ComponentView() {
     setPage(0);
   };
 
+  React.useEffect(() => {
+    console.log("Page loaded!");
+
+    const loadData = async () => {
+      const results = await ComponentManagement.getAllComponents(moduleId);
+      setRows(results);
+    };
+
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /****************** RETURN HTML ******************/
   return (
     <div className={classes.root}>
@@ -224,6 +241,9 @@ export default function ComponentView() {
         </Button>
         <Button onClick = {() => setOpenEditComponentPopup(true)}tabIndex="0" type="button" style={{backgroundColor: '#139DAE'}}>
           <span className="MuiButton-label">Edit Component</span><span className="MuiTouchRipple-root"></span>
+        </Button>
+        <Button onClick = {() => history.push("/admin/moduleclasses/" + moduleId)}type="button" style={{backgroundColor: '#139DAE'}}>
+          <span className="MuiButton-label">View class grades (temp)</span><span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
       <Paper className={classes.paper}>
@@ -246,7 +266,7 @@ export default function ComponentView() {
                 .map((row, index) => {
 
                   return (
-                    <React.Fragment>
+                    <React.Fragment  key={row._id}>
                     <StyledTableRow>
                       {/********************* INPUT CELL DATA *********************/}
                       <StyledTableCell>
@@ -254,7 +274,7 @@ export default function ComponentView() {
                           {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                         </IconButton>
                       </StyledTableCell>
-                      <StyledTableCell align="center">{row.component}</StyledTableCell>
+                      <StyledTableCell align="center">{row.name}</StyledTableCell>
                       <StyledTableCell align="center">{row.weightage}</StyledTableCell>
                       <StyledTableCell align="center">
                       <Button onClick = {() => setOpenAddSubcomponentPopup(true)} style={{backgroundColor: '#C36A33'}}  tabIndex="0" type="button">
@@ -277,12 +297,12 @@ export default function ComponentView() {
                                 </TableRow>
                               </TableHead>
                               <TableBody>
-                                {row.subcomponent.map((scRow) => (
-                                  <TableRow key={scRow.sc}>
+                                {row.subcomponents.map((scRow) => (
+                                  <TableRow key={scRow._id}>
                                     <TableCell component="th" scope="row">
-                                      {scRow.sc}
+                                      {scRow.name}
                                     </TableCell>
-                                    <TableCell>{scRow.weight}</TableCell>
+                                    <TableCell>{scRow.weightage}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>

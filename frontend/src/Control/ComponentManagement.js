@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { createComponentUrl, getComponentUrl, updateComponentUrl } from "../routes.js";
+import { createComponentUrl, getComponentUrl, getModuleComponentsUrl, updateComponentUrl } from "../routes.js";
 import Component from "../Entities/Component.js"
 
 class ComponentManagement {
@@ -36,8 +36,20 @@ class ComponentManagement {
     })
   }
 
-  static getAllComponents() {
-    return null;
+  static async getAllComponents(moduleId) {
+    let data;
+    await fetch(getModuleComponentsUrl + moduleId, {
+      method: "GET",
+      headers: {
+        Authorization:
+        "Bearer " + Cookies.get('token'),
+        "Content-Type": "application/json",
+      },
+    })
+      .then((result) => result.json())
+      .then((json) => (data = json));
+
+    return data;
   }
 
   //Tested and working

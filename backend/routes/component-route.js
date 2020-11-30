@@ -24,6 +24,22 @@ router
       .catch((err) => res.status(400).json("Error: " + err));
   });
 
+router
+  .route("/inmodule/:moduleid")
+  .all(authenticateJWT([1, 2]))
+  .get(async (req, res) => {
+    const module = await Module.findById(req.params.moduleid).exec();
+
+    //Find all components in the module
+    const components = await Component.find({
+      _id: { $in: module.components },
+    })
+      .populate("subcomponents")
+      .exec();
+
+    res.json(components);
+  });
+
 //Route: GET ...url.../component/lecturer/<componentId>
 //Roles: Lecturer
 //Lecturer class view

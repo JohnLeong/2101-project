@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   const navigateToModule = (moduleId) => {
     console.log(moduleId);
-    history.push("/admin/moduleclasses/" + moduleId);
+    history.push("/admin/componentview/" + moduleId);
   };
 
   return (

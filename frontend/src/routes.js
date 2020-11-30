@@ -27,14 +27,15 @@ import ClassGrades from "./Pages/ClassGrades";
 //External endpoints (backend)
 export const backendUrl = "http://localhost:5000/";
 
-export const loginUrl = backendUrl + "user/login";                              //POST
+export const loginUrl = backendUrl + "user/login";                                //POST
 
-export const createComponentUrl = backendUrl + "component/new/"                 //POST, component/new/<moduleId>
-export const getComponentUrl = backendUrl + "component/"                        //GET, component/<componentId>
-export const updateComponentUrl = backendUrl + "component/"                     //PUT, component/<componentId>
-export const getUserModulesUrl = backendUrl + "module/usermodules/"             //GET
-export const getModuleInfoUrl = backendUrl + "module/"                          //GET module/<moduleId>
-export const getClassGradesUrl = backendUrl + "component/lecturer/grades/"     //GET component/lecturer/grades/<classId>
+export const createComponentUrl = backendUrl + "component/new/";                  //POST, component/new/<moduleId>
+export const getComponentUrl = backendUrl + "component/";                         //GET, component/<componentId>
+export const updateComponentUrl = backendUrl + "component/";                      //PUT, component/<componentId>
+export const getUserModulesUrl = backendUrl + "module/usermodules/";              //GET
+export const getModuleInfoUrl = backendUrl + "module/";                           //GET module/<moduleId>
+export const getClassGradesUrl = backendUrl + "component/lecturer/grades/";       //GET component/lecturer/grades/<classId>
+export const getModuleComponentsUrl = backendUrl + "component/inmodule/";         //GET component/inmodule/<moduleId>
 
 export const createSubComponentUrl = backendUrl + "subcomponent/new/";                  //POST, subcomponent/new/<componentId>
 export const updateSubComponentUrl = backendUrl + "subcomponent/";                      //PUT, subcomponent/<subcomponentId>
@@ -55,7 +56,7 @@ const dashboardRoutes = [
     layout: "/admin"
   },
   {
-    path: "/componentview",
+    path: "/componentview/:moduleId",
     name: "Component View",
     icon: "content_paste",
     component: ComponentView,
