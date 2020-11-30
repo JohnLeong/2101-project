@@ -1,0 +1,5 @@
+class NotificationListener {
+    Update(message) {
+        
+    }
+}
