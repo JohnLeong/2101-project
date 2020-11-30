@@ -1,8 +1,8 @@
 import Cookies from 'js-cookie';
 import { createSubComponentUrl, updateSubComponentUrl, 
     getSubComponentUrl, updateStudentMarksUrl, importMarksUrl } from "../routes.js";
-import Component from "../Entities/component.js";
-import SubComponent from "../Entities/subcomponent.js";
+import Component from "../Entities/Component.js";
+import SubComponent from "../Entities/Subcomponent.js";
 
 class SubComponentManagement {
     static async createSubComponent(componentId, name, weightage) {

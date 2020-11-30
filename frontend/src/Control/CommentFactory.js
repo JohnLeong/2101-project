@@ -1,6 +1,6 @@
-import Component from "./comment.js"
-import SummativeComment from "./summativeComment.js"
-import FormativeComment from "./formativeComment.js"
+import Component from "./Comment.js"
+import SummativeComment from "./SummativeComment.js"
+import FormativeComment from "./FormativeComment.js"
 
 class CommentFactory {
 

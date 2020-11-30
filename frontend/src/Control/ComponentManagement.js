@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie';
 import { createComponentUrl, getComponentUrl, updateComponentUrl } from "../routes.js";
-import Component from "../Entities/component.js"
+import Component from "../Entities/Component.js"
 
 class ComponentManagement {
 

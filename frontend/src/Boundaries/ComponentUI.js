@@ -1,4 +1,4 @@
-import componentManagement from "../Control/componentManagement";
+import ComponentManagement from "../Control/ComponentManagement";
 import SubComponentManagement from "../Control/SubComponentManagement";
 
 class ComponentUI {
