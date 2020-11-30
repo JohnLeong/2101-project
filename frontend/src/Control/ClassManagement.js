@@ -18,7 +18,7 @@ class ClassManagement {
     .then((json) => (data = json));
 
     data.classes.forEach(element => {
-      classData.push(new Class(element._id, element.name, "12am to 12pm"));
+      classData.push(new Class(element._id, element.name, element.classHours));
     });
 
     return classData;
