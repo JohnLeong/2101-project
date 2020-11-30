@@ -1,18 +1,22 @@
 class Comment {
-  constructor(studentId, postedBy, commentBody) {
+  constructor(id, studentId, postedBy, body) {
+    this.id = id;
     this.studentId = studentId;
     this.postedBy = postedBy;
-    this.commentBody = commentBody;
+    this.body = body;
   }
 
+  getId() {
+    return this.id;
+  }
   getStudentId() {
     return this.studentId;
   }
   getPostedBy() {
     return this.postedBy;
   }
-  getCommentBody() {
-    return this.commentBody;
+  getBody() {
+    return this.body;
   }
   getCommentType() {
     return null;
@@ -24,8 +28,8 @@ class Comment {
   setPostedBy(postedBy) {
     this.postedBy = postedBy;
   }
-  setCommentBody(commentBody) {
-    this.commentBody = commentBody;
+  setBody(body) {
+    this.body = body;
   }
 }
 

@@ -1,7 +1,7 @@
 class FormativeComment extends Comment {
-  constructor(studentId, postedBy, commentBody) {
-    super(studentId, postedBy, commentBody);
-    this.type = "formative";
+  constructor(id, studentId, postedBy, body) {
+    super(id, studentId, postedBy, body);
+    this.commentType = "formative";
   }
 
   getCommentType() {

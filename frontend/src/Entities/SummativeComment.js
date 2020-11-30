@@ -1,6 +1,6 @@
 class SummativeComment extends Comment {
-  constructor(studentId, postedBy, commentBody) {
-    super(studentId, postedBy, commentBody);
+  constructor(id, studentId, postedBy, body) {
+    super(id, studentId, postedBy, body);
     this.commentType = "summative";
   }
 
