@@ -27,6 +27,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
 import ComponentManagement from "../Control/ComponentManagement";
+import Component from "../Entities/Component";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -200,8 +201,11 @@ export default function ComponentView() {
   const [openEditComponentPopup, setOpenEditComponentPopup] = useState(false);
   const [openEditSubcomponentPopup, setOpenEditSubcomponentPopup] = useState(false);
   const [rows, setRows] = useState([]);
+  const [editableRows, setEditableRows] = useState([]);
+  const [newRows, setNewRows] = useState([]);
   const { moduleId } = useParams();
   const history = useHistory();
+  const [submittingComponent, setSubmittingComponent] = useState(false);
   
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -218,13 +222,51 @@ export default function ComponentView() {
     setPage(0);
   };
 
+  const handleSubmitComponents = async () => {
+    if (submittingComponent) {
+      return;
+    }
+
+    let totalWeightage = 0;
+    editableRows.forEach((row) => {
+      totalWeightage += row.weightage;
+    });
+    newRows.forEach((row) => {
+      totalWeightage += row.weightage;
+    });
+
+    if (totalWeightage != 100){
+      console.log("Weightage must add up to 100");
+      return;
+    }
+
+    setSubmittingComponent(true);
+    editableRows.forEach(async (row) => {
+      await ComponentManagement.updateComponent(new Component(row._id, row.name, row.componentType, row.weightage));
+    });
+
+    setOpenEditComponentPopup(false);
+    setRows([]);
+    setEditableRows([]);
+    setNewRows([]);
+
+    await loadData();
+
+    setSubmittingComponent(false);
+  }
+
+  const handleNewComponent = () => {
+    setNewRows([...newRows, {name: "", type: "", weightage: 0}]);
+  }
+
+  const loadData = async () => {
+    const results = await ComponentManagement.getAllComponents(moduleId);
+    setRows(results);
+    setEditableRows(JSON.parse(JSON.stringify(results))); //Deep copy
+  };
+
   React.useEffect(() => {
     console.log("Page loaded!");
-
-    const loadData = async () => {
-      const results = await ComponentManagement.getAllComponents(moduleId);
-      setRows(results);
-    };
 
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -390,14 +432,14 @@ export default function ComponentView() {
           <span>
             <span
               style={{
-                fontSize: "40px",
+                fontSize: "30px",
                 fontWeight: "bold",
                 display: "block",
                 float: "left",
                 marginRight: "0px",
               }}
             >
-              &nbsp; Edit Component
+              Add/Edit Component
             </span>
             <span style={{ marginLeft: "-23px" }}>
               <Controls.ActionButton
@@ -412,42 +454,143 @@ export default function ComponentView() {
         <DialogContent>
           <Form>
             <Grid container>
+              <span>Edit components</span>
+              {editableRows.map((row, index) => {
+                return (
+                  <Grid item xs={12} key={row._id}>
+                    <span>
+                      <span style={{ display: "block", float: "left" }}>
+                        <Controls.Input
+                          label="Component Name"
+                          value={row.name}
+                          onChange={(e) => {
+                            let updated = [...editableRows];
+                            updated[index].name = e.target.value;
+                            setEditableRows(updated);
+                          }}
+                          name="ComponentId"
+                          row="1"
+                          style={{ width: 450, marginBottom: 10 }}
+                        />
+                      </span>
+                      <span style={{ display: "block", float: "left" }}>
+                        <Controls.Input
+                          label="Component Type"
+                          value={row.componentType}
+                          onChange={(e) => {
+                            let updated = [...editableRows];
+                            updated[index].componentType = e.target.value;
+                            setEditableRows(updated);
+                          }}
+                          name="ComponentType"
+                          row="1"
+                          style={{ width: 230, marginBottom: 10 }}
+                        />
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          float: "left",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Controls.Input
+                          label="Component Weight"
+                          name="ComponentWeight"
+                          value={row.weightage}
+                          row="1"
+                          type="number"
+                          onChange={(e) => {
+                            if (e.target.value < 0 || e.target.value > 100) {
+                              return;
+                            }
+                            let updated = [...editableRows];
+                            updated[index].weightage = e.target.value;
+                            setEditableRows(updated);
+                          }}
+                          style={{ width: 160, marginBottom: 10 }}
+                        />
+                      </span>
+                    </span>
+                  </Grid>
+                );
+              })}
+              <br />
+              <br />
+              <br />
+              <br />
+              <span>Add components</span>
+              {newRows.map((row, index) => {
+                return (
+                  <Grid item xs={12} key={"new" + index}>
+                    <span>
+                      <span style={{ display: "block", float: "left" }}>
+                        <Controls.Input
+                          label="Component Name"
+                          value={row.name}
+                          name="ComponentId"
+                          row="1"
+                          onChange={(e) => {
+                            let updated = [...newRows];
+                            updated[index].name = e.target.value;
+                            setNewRows(updated);
+                          }}
+                          style={{ width: 450, marginBottom: 10 }}
+                        />
+                      </span>
+                      <span style={{ display: "block", float: "left" }}>
+                        <Controls.Input
+                          label="Component Type"
+                          value={row.componentType}
+                          name="ComponentType"
+                          row="1"
+                          onChange={(e) => {
+                            let updated = [...newRows];
+                            updated[index].componentType = e.target.value;
+                            setNewRows(updated);
+                          }}
+                          style={{ width: 230, marginBottom: 10 }}
+                        />
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          float: "left",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Controls.Input
+                          label="Component Weight"
+                          name="ComponentWeight"
+                          value={row.weightage}
+                          row="1"
+                          type="number"
+                          onChange={(e) => {
+                            if (e.target.value < 0 || e.target.value > 100) {
+                              return;
+                            }
+                            let updated = [...newRows];
+                            updated[index].weightage = e.target.value;
+                            setNewRows(updated);
+                          }}
+                          style={{ width: 160, marginBottom: 10 }}
+                        />
+                      </span>
+                    </span>
+                  </Grid>
+                );
+              })}
+              <div
+                style={{
+                  display: "block",
+                  clear: "both",
+                  margin: "auto",
+                }}
+              >
+                <Controls.Button text="+" onClick={handleNewComponent} />
+              </div>
+              <br />
               <Grid item xs={12}>
-                <span>
-                  <span style={{ display: "block", float: "left" }}>
-                    <Controls.Input
-                      label="Component Name"
-                      defaultValue="Quizzes"
-                      name="ComponentId"
-                      row="1"
-                      style={{ width: 450, marginBottom: 10 }}
-                    />
-                  </span>
-                  <span style={{ display: "block", float: "left" }}>
-                    <Controls.Input
-                      label="Component Type"
-                      name="ComponentType"
-                      defaultValue="Quiz"
-                      row="1"
-                      style={{ width: 230, marginBottom: 10 }}
-                    />
-                  </span>
-                  <span
-                    style={{
-                      display: "block",
-                      float: "left",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Controls.Input
-                      label="Component Weight"
-                      name="ComponentWeight"
-                      defaultValue="30%"
-                      row="1"
-                      style={{ width: 160, marginBottom: 10 }}
-                    />
-                  </span>
-                </span>
                 <div
                   style={{
                     display: "block",
@@ -457,8 +600,18 @@ export default function ComponentView() {
                     marginTop: "20px",
                   }}
                 >
-                  <Controls.Button type="submit" text="Submit" />
-                  <Controls.Button text="Reset" color="default" />
+                  <Controls.Button
+                    onClick={handleSubmitComponents}
+                    text="Submit"
+                  />
+                  <Controls.Button
+                    text="Reset"
+                    color="default"
+                    onClick={() => {
+                      setNewRows([]);
+                      setEditableRows(JSON.parse(JSON.stringify(rows)));
+                    }}
+                  />
                 </div>
               </Grid>
             </Grid>
