@@ -107,9 +107,8 @@ router
           }
         });
 
-
         //studentID, classgroup,  name, grade, comment, subcomponent: [{sc: s, marks: m}],
-        studentResults.push({id: s.email, classGroup: moduleClass.name, name: s.name, grade: grade, comments: commentResults, subcomponents: subcomponentResults});
+        studentResults.push({studentID: s.email, classgroup: moduleClass.name, name: s.name, grade: grade, comments: commentResults, subcomponents: subcomponentResults});
       });
     });
 

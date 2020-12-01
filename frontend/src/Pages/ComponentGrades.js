@@ -27,6 +27,10 @@ import EditIcon from '@material-ui/icons/Create'
 import IconButton from '@material-ui/core/IconButton';
 import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
+import { getComponentGradesUrl } from "../routes";
+import { useParams } from "react-router-dom";
+import Cookies from "js-cookie";
+import ComponentManagement from "../Control/ComponentManagement";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -75,14 +79,14 @@ function createData(studentID, classgroup, name, grade, comment, s, m) {
   };
 }
 
-const rows = [
-  createData('1902123', 'P1', 'DONNY YEN', 'A', '', 'Quiz 1', '1' ),
-  createData('1902345', 'P2', 'HAPPY ME', 'F', '', 'Quiz 1', '2'),
-  createData('1902456', 'P1', 'ALEX CHEN', 'B', '', 'Quiz 1', '3'),
-  createData('1906123', 'P3', 'HUMPTY', 'B+', '', 'Quiz 1', '4'),
-  createData('1906433', 'P3', 'DUMPTY', 'B', '', 'Quiz 1', '5'),
-  createData('1906653', 'P2', 'HEHE', 'D', '', 'Quiz 1', '6'),
-];
+// const rows = [
+//   createData('1902123', 'P1', 'DONNY YEN', 'A', '', 'Quiz 1', '1' ),
+//   createData('1902345', 'P2', 'HAPPY ME', 'F', '', 'Quiz 1', '2'),
+//   createData('1902456', 'P1', 'ALEX CHEN', 'B', '', 'Quiz 1', '3'),
+//   createData('1906123', 'P3', 'HUMPTY', 'B+', '', 'Quiz 1', '4'),
+//   createData('1906433', 'P3', 'DUMPTY', 'B', '', 'Quiz 1', '5'),
+//   createData('1906653', 'P2', 'HEHE', 'D', '', 'Quiz 1', '6'),
+// ];
 
 
 
@@ -213,11 +217,48 @@ export default function ComponentView() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
+  const [selectedString, setSelectedString] = React.useState("");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(-1);
   const  [openAddPopup, setOpenAddPopup] = useState(false);
   const  [openEditPopup, setOpenEditPopup] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [component, setComponent] = useState({});
+  const { componentId } = useParams();
+
+  React.useEffect(() => {
+    console.log("Page loaded!");
+
+    const loadData = async () => {
+      const result = await ComponentManagement.getComponent(componentId);
+      setComponent(result);
+
+      fetch(getComponentGradesUrl + componentId, {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + Cookies.get("token"),
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => {
+          if (res.ok) {
+            return res.json();
+          } else {
+            throw new Error("An error occurred");
+          }
+        })
+        .then((jsonData) => {
+          setRows(jsonData);
+        })
+        .catch((err) => {
+          console.error("Error: " + err);
+        });
+    };
+
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -234,12 +275,12 @@ export default function ComponentView() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
+  const handleClick = (event, studentID) => {
+    const selectedIndex = selected.indexOf(studentID);
     let newSelected = [];
 
     if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
+      newSelected = newSelected.concat(selected, studentID);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
     } else if (selectedIndex === selected.length - 1) {
@@ -252,6 +293,10 @@ export default function ComponentView() {
     }
 
     setSelected(newSelected);
+
+    let idString = " ";
+    newSelected.forEach((id) => idString += id + ", ");
+    setSelectedString(idString);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -287,23 +332,38 @@ export default function ComponentView() {
   /****************** RETURN HTML ******************/
   return (
     <div className={classes.root}>
+      <div>
+        <h3>{component.name}</h3>
+      </div>
       <div className={classes.buttonDiv}>
         <Fragment>
           <Button
-          onClick={importClick}
-          type="submit"
-          variant="contained"
-          tabIndex="0"
-          style={{ margin:'10px', backgroundColor: '#139DAE'}}>Import Marks</Button>
+            onClick={importClick}
+            type="submit"
+            variant="contained"
+            tabIndex="0"
+            style={{ margin: "10px", backgroundColor: "#139DAE" }}
+          >
+            Import Marks
+          </Button>
 
-          <input type="file" name="file"
+          <input
+            type="file"
+            name="file"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
             ref={hiddenFileInput}
             onChange={importChange}
-            style={{ display: 'none' }} />
+            style={{ display: "none" }}
+          />
         </Fragment>
-        <Button onClick = {() => setOpenAddPopup(true)} tabIndex="0" type="button" style={{backgroundColor: '#139DAE'}}>
-          <span className="MuiButton-label">Add Comment</span><span className="MuiTouchRipple-root"></span>
+        <Button
+          onClick={() => setOpenAddPopup(true)}
+          tabIndex="0"
+          type="button"
+          style={{ backgroundColor: "#139DAE" }}
+        >
+          <span className="MuiButton-label">Add Comment</span>
+          <span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
       <Paper className={classes.paper}>
@@ -311,7 +371,7 @@ export default function ComponentView() {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size='small'
+            size="small"
           >
             <EnhancedTableHead
               classes={classes}
@@ -323,76 +383,126 @@ export default function ComponentView() {
               rowCount={rows.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const isItemSelected = isSelected(row.studentID);
-                  const labelId = `enhanced-table-checkbox-${index}`;
+              {rows.length < 1 ? (
+                <tr>
+                  <td>Loading</td>
+                </tr>
+              ) : (
+                stableSort(rows, getComparator(order, orderBy))
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    const isItemSelected = isSelected(row.studentID);
+                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                  return (
-                    <React.Fragment>
-                    <StyledTableRow
-                    >
-                      {/********************* INPUT CELL DATA *********************/}
-                      <StyledTableCell>
-                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(open === index ? -1 : index)}>
-                          {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                        </IconButton>
-                      </StyledTableCell>
-                      <StyledTableCell align="center">{row.studentID}</StyledTableCell>
-                      <StyledTableCell align="center">{row.classgroup}</StyledTableCell>
-                      <StyledTableCell align="left">{row.name}</StyledTableCell>
-                      <StyledTableCell align="left">{row.grade}</StyledTableCell>
-                      <StyledTableCell align="center">
-                      <Button onClick = {() => setOpenEditPopup(true)} style={{backgroundColor: '#C36A33'}}  tabIndex="0" type="button">
-                          <span className="MuiButton-label">Edit Comments</span><span className="MuiTouchRipple-root"></span>
-                        </Button>
-                      </StyledTableCell>
-                      <StyledTableCell padding="checkbox">
-                        <Checkbox
-                          onClick={(event) => handleClick(event, row.studentID)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.studentID}
-                          selected={isItemSelected}
-                          checked={isItemSelected}
-                          inputProps={{ 'aria-labelledby': labelId }}
-                        />
-                      </StyledTableCell>
-                    </StyledTableRow>
-                    <TableRow>
-                      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Collapse in={open === index} timeout="auto" unmountOnExit>
-                          <Box margin={1}>
-                            <Table size="small" aria-label="Subcomponent information">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell style={{fontWeight: '700'}}>Subcomponent Name</TableCell>
-                                  <TableCell style={{fontWeight: '700'}}>Mark</TableCell>
-                                  <TableCell></TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {row.subcomponent.map((scRow) => (
-                                  <TableRow key={scRow.sc}>
-                                    <TableCell component="th" scope="row">
-                                      {scRow.sc}
-                                    </TableCell>
-                                    <TableCell>{scRow.marks}</TableCell>
-                                    <TableCell style={{cursor: 'pointer'}}><EditIcon /></TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </TableRow>
-                    </React.Fragment>
-                  );
-                })}
-              
+                    return (
+                      <React.Fragment key={row.studentID}>
+                        <StyledTableRow>
+                          {/********************* INPUT CELL DATA *********************/}
+                          <StyledTableCell>
+                            <IconButton
+                              aria-label="expand row"
+                              size="small"
+                              onClick={() =>
+                                setOpen(open === index ? -1 : index)
+                              }
+                            >
+                              {open === index ? (
+                                <KeyboardArrowUpIcon />
+                              ) : (
+                                <KeyboardArrowDownIcon />
+                              )}
+                            </IconButton>
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {row.studentID}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {row.classgroup}
+                          </StyledTableCell>
+                          <StyledTableCell align="left">
+                            {row.name}
+                          </StyledTableCell>
+                          <StyledTableCell align="left">
+                            {row.grade}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            <Button
+                              onClick={() => setOpenEditPopup(true)}
+                              style={{ backgroundColor: "#C36A33" }}
+                              tabIndex="0"
+                              type="button"
+                            >
+                              <span className="MuiButton-label">
+                                Edit Comments
+                              </span>
+                              <span className="MuiTouchRipple-root"></span>
+                            </Button>
+                          </StyledTableCell>
+                          <StyledTableCell padding="checkbox">
+                            <Checkbox
+                              onClick={(event) =>
+                                handleClick(event, row.studentID)
+                              }
+                              role="checkbox"
+                              aria-checked={isItemSelected}
+                              tabIndex={-1}
+                              key={row.studentID}
+                              selected={isItemSelected}
+                              checked={isItemSelected}
+                              inputProps={{ "aria-labelledby": labelId }}
+                            />
+                          </StyledTableCell>
+                        </StyledTableRow>
+                        <TableRow>
+                          <TableCell
+                            style={{ paddingBottom: 0, paddingTop: 0 }}
+                            colSpan={6}
+                          >
+                            <Collapse
+                              in={open === index}
+                              timeout="auto"
+                              unmountOnExit
+                            >
+                              <Box margin={1}>
+                                <Table
+                                  size="small"
+                                  aria-label="Subcomponent information"
+                                >
+                                  <TableHead>
+                                    <TableRow>
+                                      <TableCell style={{ fontWeight: "700" }}>
+                                        Subcomponent Name
+                                      </TableCell>
+                                      <TableCell style={{ fontWeight: "700" }}>
+                                        Mark
+                                      </TableCell>
+                                      <TableCell></TableCell>
+                                    </TableRow>
+                                  </TableHead>
+                                  <TableBody>
+                                    {row.subcomponents.map((scRow) => (
+                                      <TableRow key={scRow.sc}>
+                                        <TableCell component="th" scope="row">
+                                          {scRow.sc}
+                                        </TableCell>
+                                        <TableCell>{scRow.marks}</TableCell>
+                                        <TableCell
+                                          style={{ cursor: "pointer" }}
+                                        >
+                                          <EditIcon />
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    );
+                  })
+              )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -406,102 +516,117 @@ export default function ComponentView() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <Dialog open = {openAddPopup} maxWidth = "md" fullWidth = {true}>
-      <DialogTitle>
-              <span>
-              <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginLeft:"7px"}}> Add Comment</span>
-                    <span style={{marginLeft:"20px"}}>
-                    <Controls.ActionButton onClick = {() => setOpenAddPopup(false)} color="secondary" >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    </span>
-                    
-                </span>
-            </DialogTitle> 
-            <DialogContent>
-            <Form>
+      <Dialog open={openAddPopup} maxWidth="md" fullWidth={true}>
+        <DialogTitle>
+          <span>
+            <span
+              style={{
+                fontSize: "40px",
+                fontWeight: "bold",
+                display: "block",
+                float: "left",
+                marginLeft: "7px",
+              }}
+            >
+              {" "}
+              Add Comment
+            </span>
+            <span style={{ marginLeft: "20px" }}>
+              <Controls.ActionButton
+                onClick={() => setOpenAddPopup(false)}
+                color="secondary"
+              >
+                <CloseIcon fontSize="small" />
+              </Controls.ActionButton>
+            </span>
+          </span>
+        </DialogTitle>
+        <DialogContent>
+          <Form>
             <Grid container>
-                <Grid item xs={6}> 
-                    <Controls.Input
-                        label = "Student ID:"
-                        value="1902758, 1906512"
-                        disabled
-                        name="StudentId"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Enter Comments Here"
-                        rows = {20}
-                    />
-                    <div>
-                        <Controls.Button
-                            type="submit"
-                            text="Submit"
-                             />
-                        <Controls.Button
-                            text="Reset"
-                            color="default" />
-                    </div>
-                </Grid>
+              <Grid item xs={6}>
+                <Controls.Input
+                  label="Student ID:"
+                  value={selectedString}
+                  disabled
+                  name="StudentId"
+                />
+                <Controls.InputLarge
+                  name="CommentId"
+                  label="Enter Comments Here"
+                  rows={20}
+                />
+                <div>
+                  <Controls.Button type="submit" text="Submit" />
+                  <Controls.Button text="Reset" color="default" />
+                </div>
+              </Grid>
             </Grid>
-        </Form>
-            </DialogContent>
-        </Dialog>
-        {/* END OF ADD COMMENTS FORM */}
-        <Dialog open = {openEditPopup} maxWidth = "md" fullWidth = {true}>
-            <DialogTitle>
-              <span>
-                <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginLeft:"0px"}}>&nbsp;Edit Comment</span>
-                <span style={{marginLeft:"20px"}}>
-                    <Controls.ActionButton  onClick = {() => setOpenEditPopup(false)}  color="secondary" >
-                      <CloseIcon fontSize="small" />
-
-                    </Controls.ActionButton>
-                    </span>
-                    </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      {/* END OF ADD COMMENTS FORM */}
+      <Dialog open={openEditPopup} maxWidth="md" fullWidth={true}>
+        <DialogTitle>
+          <span>
+            <span
+              style={{
+                fontSize: "40px",
+                fontWeight: "bold",
+                display: "block",
+                float: "left",
+                marginLeft: "0px",
+              }}
+            >
+              &nbsp;Edit Comment
+            </span>
+            <span style={{ marginLeft: "20px" }}>
+              <Controls.ActionButton
+                onClick={() => setOpenEditPopup(false)}
+                color="secondary"
+              >
+                <CloseIcon fontSize="small" />
+              </Controls.ActionButton>
+            </span>
+          </span>
+        </DialogTitle>
+        <DialogContent>
+          <Form>
             <Grid container>
-                <Grid item xs={6}> 
-                    
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <Controls.InputLarge
-                        name="CommentId"
-                        label="Edit Comments Here"
-                        rows = {5}
-                        defaultValue = "This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                    />
-                    <div>
-                        <Controls.Button
-                            type="submit"
-                            text="Submit" />
-                        <Controls.Button
-                            text="Reset"
-                            color="default" />
-                    </div>
-                </Grid>
+              <Grid item xs={6}>
+                <Controls.InputLarge
+                  name="CommentId"
+                  label="Edit Comments Here"
+                  rows={5}
+                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                />
+                <Controls.InputLarge
+                  name="CommentId"
+                  label="Edit Comments Here"
+                  rows={5}
+                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                />
+                <Controls.InputLarge
+                  name="CommentId"
+                  label="Edit Comments Here"
+                  rows={5}
+                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                />
+                <Controls.InputLarge
+                  name="CommentId"
+                  label="Edit Comments Here"
+                  rows={5}
+                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
+                />
+                <div>
+                  <Controls.Button type="submit" text="Submit" />
+                  <Controls.Button text="Reset" color="default" />
+                </div>
+              </Grid>
             </Grid>
-        </Form>
-            </DialogContent>
-        </Dialog>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
-    );
+  );
   }

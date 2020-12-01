@@ -36,6 +36,7 @@ export const getUserModulesUrl = backendUrl + "module/usermodules/";            
 export const getModuleInfoUrl = backendUrl + "module/";                           //GET module/<moduleId>
 export const getClassGradesUrl = backendUrl + "component/lecturer/grades/";       //GET component/lecturer/grades/<classId>
 export const getModuleComponentsUrl = backendUrl + "component/inmodule/";         //GET component/inmodule/<moduleId>
+export const getComponentGradesUrl = backendUrl + "component/lecturer/";          //GET component/lecturer/<componentId>
 export const isCompleteUrl = backendUrl + "component/lecturer/";                     //GET component/lecturer/<componentId>/<studentId>
 
 export const createSubComponentUrl = backendUrl + "subcomponent/new/";                  //POST, subcomponent/new/<componentId>
@@ -67,7 +68,7 @@ const dashboardRoutes = [
     hidden: true,
   },
   {
-    path: "/componentgrades",
+    path: "/componentgrades/:componentId",
     name: "Component Grades",
     icon: "content_paste",
     component: ComponentGrades,

@@ -212,7 +212,7 @@ export default function ClassList() {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   return (
-                    <React.Fragment>
+                    <React.Fragment key = {row.studentID}>
                     <StyledTableRow
                     >
                       {/********************* INPUT CELL DATA *********************/}

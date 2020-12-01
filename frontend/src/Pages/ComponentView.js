@@ -197,10 +197,8 @@ export default function ComponentView() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(-1);
-  const  [openAddComponentPopup, setOpenAddComponentPopup] = useState(false);
-  const  [openEditComponentPopup, setOpenEditComponentPopup] = useState(false);
-  const  [openAddSubcomponentPopup, setOpenAddSubcomponentPopup] = useState(false);
-  const  [openEditSubcomponentPopup, setOpenEditSubcomponentPopup] = useState(false);
+  const [openEditComponentPopup, setOpenEditComponentPopup] = useState(false);
+  const [openEditSubcomponentPopup, setOpenEditSubcomponentPopup] = useState(false);
   const [rows, setRows] = useState([]);
   const { moduleId } = useParams();
   const history = useHistory();
@@ -236,14 +234,22 @@ export default function ComponentView() {
   return (
     <div className={classes.root}>
       <div className={classes.buttonDiv}>
-        <Button onClick = {() => setOpenAddComponentPopup(true)}tabIndex="0" type="button" style={{margin:'10px', backgroundColor: '#139DAE'}}>
-          <span className="MuiButton-label">Add Component</span><span className="MuiTouchRipple-root"></span>
+        <Button
+          onClick={() => setOpenEditComponentPopup(true)}
+          tabIndex="0"
+          type="button"
+          style={{ backgroundColor: "#139DAE" }}
+        >
+          <span className="MuiButton-label">Add/Edit Component</span>
+          <span className="MuiTouchRipple-root"></span>
         </Button>
-        <Button onClick = {() => setOpenEditComponentPopup(true)}tabIndex="0" type="button" style={{backgroundColor: '#139DAE'}}>
-          <span className="MuiButton-label">Edit Component</span><span className="MuiTouchRipple-root"></span>
-        </Button>
-        <Button onClick = {() => history.push("/admin/moduleclasses/" + moduleId)}type="button" style={{backgroundColor: '#139DAE'}}>
-          <span className="MuiButton-label">View class grades (temp)</span><span className="MuiTouchRipple-root"></span>
+        <Button
+          onClick={() => history.push("/admin/moduleclasses/" + moduleId)}
+          type="button"
+          style={{ backgroundColor: "#139DAE" }}
+        >
+          <span className="MuiButton-label">View class grades (temp)</span>
+          <span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
       <Paper className={classes.paper}>
@@ -251,7 +257,7 @@ export default function ComponentView() {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size='small'
+            size="small"
           >
             <EnhancedTableHead
               classes={classes}
@@ -264,57 +270,106 @@ export default function ComponentView() {
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-
                   return (
-                    <React.Fragment  key={row._id}>
-                    <StyledTableRow>
-                      {/********************* INPUT CELL DATA *********************/}
-                      <StyledTableCell>
-                        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(open === index ? -1 : index)}>
-                          {open === index ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                        </IconButton>
-                      </StyledTableCell>
-                      <StyledTableCell align="center">{row.name}</StyledTableCell>
-                      <StyledTableCell align="center">{row.weightage}</StyledTableCell>
-                      <StyledTableCell align="center">
-                      <Button onClick = {() => setOpenAddSubcomponentPopup(true)} style={{backgroundColor: '#C36A33'}}  tabIndex="0" type="button">
-                          <span className="MuiButton-label">Add Subcomponents</span><span className="MuiTouchRipple-root"></span>
-                        </Button>
-                        <Button onClick = {() => setOpenEditSubcomponentPopup(true)} style={{backgroundColor: '#C36A33'}}  tabIndex="0" type="button">
+                    <React.Fragment key={row._id}>
+                      <StyledTableRow>
+                        {/********************* INPUT CELL DATA *********************/}
+                        <StyledTableCell>
+                          <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => setOpen(open === index ? -1 : index)}
+                          >
+                            {open === index ? (
+                              <KeyboardArrowUpIcon />
+                            ) : (
+                              <KeyboardArrowDownIcon />
+                            )}
+                          </IconButton>
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.name}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          {row.weightage}
+                        </StyledTableCell>
+                        <StyledTableCell align="center">
+                          <Button
+                            onClick={() => setOpenEditSubcomponentPopup(true)}
+                            style={{ backgroundColor: "#C36A33" }}
+                            tabIndex="0"
+                            type="button"
+                          >
+                            <span className="MuiButton-label">
+                              Add/Edit Subcomponents
+                            </span>
+                            <span className="MuiTouchRipple-root"></span>
+                          </Button>
+                          {/* <Button onClick = {() => setOpenEditSubcomponentPopup(true)} style={{backgroundColor: '#C36A33'}}  tabIndex="0" type="button">
                           <span className="MuiButton-label">Edit Subcomponents</span><span className="MuiTouchRipple-root"></span>
-                        </Button>
-                      </StyledTableCell>
-                    </StyledTableRow>
-                    <StyledTableRow>
-                      <TableCell style={{ paddingRight:0,paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-                        <Collapse in={open === index} timeout="auto" unmountOnExit>
-                          <Box margin={1}>
-                            <Table size="small" aria-label="Subcomponent information">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell style={{fontWeight: '700'}}>Subcomponent Name</TableCell>
-                                  <TableCell style={{fontWeight: '700'}}>Weightage</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {row.subcomponents.map((scRow) => (
-                                  <TableRow key={scRow._id}>
-                                    <TableCell component="th" scope="row">
-                                      {scRow.name}
+                        </Button> */}
+                          <Button
+                            onClick={() =>
+                              history.push("/admin/componentgrades/" + row._id)
+                            }
+                            style={{ backgroundColor: "#C36A33" }}
+                            tabIndex="0"
+                            type="button"
+                          >
+                            <span className="MuiButton-label">
+                              Component grades
+                            </span>
+                            <span className="MuiTouchRipple-root"></span>
+                          </Button>
+                        </StyledTableCell>
+                      </StyledTableRow>
+                      <StyledTableRow>
+                        <TableCell
+                          style={{
+                            paddingRight: 0,
+                            paddingBottom: 0,
+                            paddingTop: 0,
+                          }}
+                          colSpan={6}
+                        >
+                          <Collapse
+                            in={open === index}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            <Box margin={1}>
+                              <Table
+                                size="small"
+                                aria-label="Subcomponent information"
+                              >
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell style={{ fontWeight: "700" }}>
+                                      Subcomponent Name
                                     </TableCell>
-                                    <TableCell>{scRow.weightage}</TableCell>
+                                    <TableCell style={{ fontWeight: "700" }}>
+                                      Weightage
+                                    </TableCell>
                                   </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          </Box>
-                        </Collapse>
-                      </TableCell>
-                    </StyledTableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {row.subcomponents.map((scRow) => (
+                                    <TableRow key={scRow._id}>
+                                      <TableCell component="th" scope="row">
+                                        {scRow.name}
+                                      </TableCell>
+                                      <TableCell>{scRow.weightage}</TableCell>
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </Box>
+                          </Collapse>
+                        </TableCell>
+                      </StyledTableRow>
                     </React.Fragment>
                   );
                 })}
-              
             </TableBody>
           </Table>
         </TableContainer>
@@ -328,257 +383,172 @@ export default function ComponentView() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      {/* Add Component Form */}
-      <Dialog open = {openAddComponentPopup} maxWidth = "md" fullWidth={true}>
-            <DialogTitle>
-              <span>
-              <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginRight:"0px"}}>&nbsp; Add Component</span>
-                    <span style={{marginLeft:"-23px"}}>
-                    <Controls.ActionButton onClick = {() => setOpenAddComponentPopup(false)} color="secondary" >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    </span>
-                </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
+
+      {/* EDIT Component Form */}
+      <Dialog open={openEditComponentPopup} maxWidth="md" fullWidth={true}>
+        <DialogTitle>
+          <span>
+            <span
+              style={{
+                fontSize: "40px",
+                fontWeight: "bold",
+                display: "block",
+                float: "left",
+                marginRight: "0px",
+              }}
+            >
+              &nbsp; Edit Component
+            </span>
+            <span style={{ marginLeft: "-23px" }}>
+              <Controls.ActionButton
+                onClick={() => setOpenEditComponentPopup(false)}
+                color="secondary"
+              >
+                <CloseIcon fontSize="small" />
+              </Controls.ActionButton>
+            </span>
+          </span>
+        </DialogTitle>
+        <DialogContent>
+          <Form>
             <Grid container>
-                <Grid item xs={12}> 
+              <Grid item xs={12}>
                 <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Name"
-                          placeholder="eg: Lab Quizzes, Final Exam, etc"
-                          name="ComponentId"
-                          row = "1"
-                          style = {{width: 450, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Type"
-                          placeholder="eg: Test, Project, Quiz, etc"
-                          name="ComponentType"
-                          row = "1"
-                          style = {{width: 230, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "Component Weight"
-                          placeholder="eg: 10%, 20%, etc"
-                          name="ComponentWeight"
-                          row = "1"
-                          style = {{width: 160, marginBottom:10}}
-                      />
-                    </span>
+                  <span style={{ display: "block", float: "left" }}>
+                    <Controls.Input
+                      label="Component Name"
+                      defaultValue="Quizzes"
+                      name="ComponentId"
+                      row="1"
+                      style={{ width: 450, marginBottom: 10 }}
+                    />
+                  </span>
+                  <span style={{ display: "block", float: "left" }}>
+                    <Controls.Input
+                      label="Component Type"
+                      name="ComponentType"
+                      defaultValue="Quiz"
+                      row="1"
+                      style={{ width: 230, marginBottom: 10 }}
+                    />
+                  </span>
+                  <span
+                    style={{
+                      display: "block",
+                      float: "left",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Controls.Input
+                      label="Component Weight"
+                      name="ComponentWeight"
+                      defaultValue="30%"
+                      row="1"
+                      style={{ width: 160, marginBottom: 10 }}
+                    />
+                  </span>
                 </span>
-                <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
-                  <Controls.Button
-                      type="submit"
-                      text="Submit"
-                        />
-                  <Controls.Button
-                      text="Reset"
-                      color="default" />
+                <div
+                  style={{
+                    display: "block",
+                    clear: "both",
+                    float: "right",
+                    marginRight: "27px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <Controls.Button type="submit" text="Submit" />
+                  <Controls.Button text="Reset" color="default" />
                 </div>
-                </Grid>
-                
+              </Grid>
             </Grid>
-        </Form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      {/* END OF EDIT COMPONENTS FORM */}
 
-            </DialogContent>
-        </Dialog>
-{/* END OF ADD COMPONENTS FORM */}
-
-        {/* EDIT Component Form */}
-      <Dialog open = {openEditComponentPopup} maxWidth = "md" fullWidth={true}>
-            <DialogTitle>
-              <span>
-              <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginRight:"0px"}}>&nbsp; Edit Component</span>
-                    <span style={{marginLeft:"-23px"}}>
-                    <Controls.ActionButton onClick = {() => setOpenEditComponentPopup(false)} color="secondary" >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    </span>
-                </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
+      {/* ADD/EDIT SubComponent Form */}
+      <Dialog open={openEditSubcomponentPopup} maxWidth="md" fullWidth={true}>
+        <DialogTitle>
+          <span>
+            <span
+              style={{
+                fontSize: "40px",
+                fontWeight: "bold",
+                display: "block",
+                float: "left",
+                marginRight: "0px",
+              }}
+            >
+              &nbsp; Edit SubComponent
+            </span>
+            <span style={{ marginLeft: "-100px" }}>
+              <Controls.ActionButton
+                onClick={() => setOpenEditSubcomponentPopup(false)}
+                color="secondary"
+              >
+                <CloseIcon fontSize="small" />
+              </Controls.ActionButton>
+            </span>
+          </span>
+        </DialogTitle>
+        <DialogContent>
+          <Form>
             <Grid container>
-                <Grid item xs={12}> 
+              <Grid item xs={12}>
                 <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Name"
-                          defaultValue = "Quizzes"
-                          name="ComponentId"
-                          row = "1"
-                          style = {{width: 450, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "Component Type"
-                          name="ComponentType"
-                          defaultValue = "Quiz"
-                          row = "1"
-                          style = {{width: 230, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "Component Weight"
-                          name="ComponentWeight"
-                          defaultValue = "30%"
-                          row = "1"
-                          style = {{width: 160, marginBottom:10}}
-                      />
-                    </span>
+                  <span style={{ display: "block", float: "left" }}>
+                    <Controls.Input
+                      label="SubComponent Name"
+                      defaultValue="Quiz 1"
+                      name="SubComponentId"
+                      row="1"
+                      style={{ width: 430, marginBottom: 10 }}
+                    />
+                  </span>
+                  <span style={{ display: "block", float: "left" }}>
+                    <Controls.Input
+                      label="SubComponent Type"
+                      name="SubComponentType"
+                      defaultValue="Quiz"
+                      row="1"
+                      style={{ width: 220, marginBottom: 10 }}
+                    />
+                  </span>
+                  <span
+                    style={{
+                      display: "block",
+                      float: "left",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Controls.Input
+                      label="SubComponent Weight"
+                      name="SubComponentWeight"
+                      defaultValue="30%"
+                      row="1"
+                      style={{ width: 190, marginBottom: 10 }}
+                    />
+                  </span>
                 </span>
-                <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
-                  <Controls.Button
-                      type="submit"
-                      text="Submit"
-                        />
-                  <Controls.Button
-                      text="Reset"
-                      color="default" />
+                <div
+                  style={{
+                    display: "block",
+                    clear: "both",
+                    float: "right",
+                    marginRight: "27px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <Controls.Button type="submit" text="Submit" />
+                  <Controls.Button text="Reset" color="default" />
                 </div>
-                </Grid>
-                
+              </Grid>
             </Grid>
-        </Form>
-
-            </DialogContent>
-        </Dialog>
-        {/* END OF EDIT COMPONENTS FORM */}
-
-      {/* Add SubComponent Form */}
-      <Dialog open = {openAddSubcomponentPopup} maxWidth = "md" fullWidth={true}>
-            <DialogTitle>
-              <span>
-              <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginRight:"0px"}}>&nbsp; Add SubComponent</span>
-                    <span style={{marginLeft:"-100px"}}>
-                    <Controls.ActionButton onClick = {() => setOpenAddSubcomponentPopup(false)} color="secondary" >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    </span>
-                </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
-            <Grid container>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Name"
-                          placeholder="eg: Lab Quizzes, Final Exam, etc"
-                          name="SubComponentID"
-                          row = "1"
-                          style = {{width: 430, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Type"
-                          placeholder="eg: Test, Project, Quiz, etc"
-                          name="SubComponentType"
-                          row = "1"
-                          style = {{width: 220, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "SubComponent Weight"
-                          placeholder="eg: 10%, 20%, etc"
-                          name="SubComponentWeight"
-                          row = "1"
-                          style = {{width: 190, marginBottom:10}}
-                      />
-                    </span>
-                </span>
-                <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
-                  <Controls.Button
-                      type="submit"
-                      text="Submit"
-                        />
-                  <Controls.Button
-                      text="Reset"
-                      color="default" />
-                </div>
-                </Grid>
-                
-            </Grid>
-        </Form>
-
-            </DialogContent>
-        </Dialog>
-{/* END OF ADD SUBCOMPONENTS FORM */}
-
-        {/* EDIT SubComponent Form */}
-      <Dialog open = {openEditSubcomponentPopup} maxWidth = "md" fullWidth={true}>
-            <DialogTitle>
-              <span>
-              <span style={{fontSize:"40px", fontWeight:"bold", display: "block", float:"left", marginRight:"0px"}}>&nbsp; Edit SubComponent</span>
-              <span style={{marginLeft:"-100px"}}>
-                    <Controls.ActionButton onClick = {() => setOpenEditSubcomponentPopup(false)} color="secondary" >
-                      <CloseIcon fontSize="small" />
-                    </Controls.ActionButton>
-                    </span>
-                </span>
-            </DialogTitle>    
-            <DialogContent>
-            <Form>
-            <Grid container>
-                <Grid item xs={12}> 
-                <span>
-                  <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Name"
-                          defaultValue = "Quiz 1"
-                          name="SubComponentId"
-                          row = "1"
-                          style = {{width: 430, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left"}}>
-                      <Controls.Input
-                          label = "SubComponent Type"
-                          name="SubComponentType"
-                          defaultValue = "Quiz"
-                          row = "1"
-                          style = {{width: 220, marginBottom:10}}
-                      />
-                    </span>
-                    <span style={{display: "block", float:"left", textAlign:"center"}}>
-                      <Controls.Input
-                          label = "SubComponent Weight"
-                          name="SubComponentWeight"
-                          defaultValue = "30%"
-                          row = "1"
-                          style = {{width: 190, marginBottom:10}}
-                      />
-                    </span>
-                </span>
-                <div style={{display: "block", clear:"both", float:"right", marginRight:"27px", marginTop:"20px"}}>
-                  <Controls.Button
-                      type="submit"
-                      text="Submit"
-                        />
-                  <Controls.Button
-                      text="Reset"
-                      color="default" />
-                </div>
-                </Grid>
-                
-            </Grid>
-        </Form>
-
-            </DialogContent>
-        </Dialog>
-        {/* END OF EDIT SUBCOMPONENTS FORM */}
+          </Form>
+        </DialogContent>
+      </Dialog>
+      {/* END OF EDIT SUBCOMPONENTS FORM */}
     </div>
-    );
+  );
   }
