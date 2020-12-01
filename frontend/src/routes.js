@@ -36,6 +36,7 @@ export const getUserModulesUrl = backendUrl + "module/usermodules/";            
 export const getModuleInfoUrl = backendUrl + "module/";                           //GET module/<moduleId>
 export const getClassGradesUrl = backendUrl + "component/lecturer/grades/";       //GET component/lecturer/grades/<classId>
 export const getModuleComponentsUrl = backendUrl + "component/inmodule/";         //GET component/inmodule/<moduleId>
+export const isCompleteUrl = backendUrl + "component/lecturer/";                     //GET component/lecturer/<componentId>/<studentId>
 
 export const createSubComponentUrl = backendUrl + "subcomponent/new/";                  //POST, subcomponent/new/<componentId>
 export const updateSubComponentUrl = backendUrl + "subcomponent/";                      //PUT, subcomponent/<subcomponentId>
@@ -43,6 +44,8 @@ export const getSubComponentUrl = backendUrl + "subcomponent/";                 
 export const updateStudentMarksUrl = backendUrl + "subcomponent/edit/studentmarks/";    //PUT, subcomponent/edit/studentmarks/<subcomponentId>
 export const importMarksUrl = backendUrl + "subcomponent/new/importmarks/";             //PUT, subcomponent/new/importmarks/<componentId>
 // getStudentMarks()
+
+export const createCommentUrl = backendUrl + "comment/new/";                         //POST, comment/new/<componentId>
 
 //Internal (frontend)
 export const modulesUrl = "/admin/dashboard";

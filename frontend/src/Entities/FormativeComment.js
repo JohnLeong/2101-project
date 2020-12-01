@@ -1,3 +1,5 @@
+import Comment from "../Entities/Comment.js";
+
 class FormativeComment extends Comment {
   constructor(id, studentId, postedBy, body) {
     super(id, studentId, postedBy, body);
