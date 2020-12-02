@@ -66,8 +66,55 @@ class ComponentManagement {
     return new Component(data._id, data.name, data.componentType, data.weightage);
   }
 
-  static calculateGrade(component) {
-    return null;
+  static calculateGrade(subcomponents, studentId) {
+    let scoredMarks = 0;
+    let maximumMarks = 0;
+
+    for (let i = 0; i < subcomponents.length; ++i) {
+      let marks = subcomponents[i].getStudentMarks()[studentId];
+      maximumMarks += 100 * subcomponents[i].weightage;
+
+      if (typeof marks !== "undefined") {
+        scoredMarks += marks * subcomponents[i].weightage;
+      }
+    }
+
+    const marksPercentage = scoredMarks / maximumMarks;
+    let grade;
+    if (marksPercentage >= 84)
+      grade = 'A';
+    else if (marksPercentage >= 67)
+      grade = 'B';
+    else if (marksPercentage >= 57)
+      grade = 'C';
+    else if (marksPercentage >= 47)
+      grade = 'D';
+    else if (marksPercentage >= 37)
+      grade = 'E';
+    else
+      grade = 'F';
+
+    return grade;
+  }
+
+  static calculateMarksPercentage(subcomponents, studentId) {
+    let scoredMarks = 0;
+    let maximumMarks = 0;
+
+    for (let i = 0; i < subcomponents.length; ++i) {
+      if (subcomponents[i].weightage === 0) {
+        continue;
+      }
+
+      let marks = subcomponents[i].getStudentMarks()[studentId];
+      maximumMarks += 100 * subcomponents[i].weightage;
+
+      if (typeof marks !== "undefined") {
+        scoredMarks += marks * subcomponents[i].weightage;
+      }
+    }
+
+    return scoredMarks / maximumMarks;
   }
 }
 

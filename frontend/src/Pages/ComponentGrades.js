@@ -217,6 +217,7 @@ export default function ComponentView() {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
+  const [selectedIds, setSelectedIds] = React.useState([]);
   const [selectedString, setSelectedString] = React.useState("");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -275,24 +276,32 @@ export default function ComponentView() {
     setSelected([]);
   };
 
-  const handleClick = (event, studentID) => {
+  const handleClick = (event, _id, studentID) => {
     const selectedIndex = selected.indexOf(studentID);
     let newSelected = [];
+    let newSelectedIds = []
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, studentID);
+      newSelectedIds = newSelectedIds.concat(selectedIds, _id);
     } else if (selectedIndex === 0) {
       newSelected = newSelected.concat(selected.slice(1));
+      newSelectedIds = newSelectedIds.concat(selectedIds.slice(1));
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
+      newSelectedIds = newSelectedIds.concat(selectedIds.slice(0, -1));
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
         selected.slice(selectedIndex + 1),  
       );
+      newSelectedIds = newSelectedIds.concat(
+        selectedIds.slice(0, selectedIndex),
+        selectedIds.slice(selectedIndex + 1),  
+      );
     }
-
     setSelected(newSelected);
+    setSelectedIds(newSelectedIds);
 
     let idString = " ";
     newSelected.forEach((id) => idString += id + ", ");
@@ -441,7 +450,7 @@ export default function ComponentView() {
                           <StyledTableCell padding="checkbox">
                             <Checkbox
                               onClick={(event) =>
-                                handleClick(event, row.studentID)
+                                handleClick(event, row._id, row.studentID)
                               }
                               role="checkbox"
                               aria-checked={isItemSelected}
