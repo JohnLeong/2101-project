@@ -222,27 +222,32 @@ export default function ComponentView() {
     setPage(0);
   };
 
-  const handleSubmitComponents = async () => {
+  const handleSubmitComponents = async (event) => {
+    event.preventDefault();
     if (submittingComponent) {
       return;
     }
 
     let totalWeightage = 0;
     editableRows.forEach((row) => {
-      totalWeightage += row.weightage;
+      totalWeightage += parseInt(row.weightage);
     });
     newRows.forEach((row) => {
-      totalWeightage += row.weightage;
+      totalWeightage += parseInt(row.weightage);
     });
 
     if (totalWeightage != 100){
-      console.log("Weightage must add up to 100");
+      alert("Weightage must add up to 100");
+      console.log("Weightage must add up to 100, current weightage: " + totalWeightage);
       return;
     }
 
     setSubmittingComponent(true);
     editableRows.forEach(async (row) => {
       await ComponentManagement.updateComponent(new Component(row._id, row.name, row.componentType, row.weightage));
+    });
+    newRows.forEach(async (row) => {
+      await ComponentManagement.addComponent(new Component(null, row.name, row.componentType, row.weightage), moduleId);
     });
 
     setOpenEditComponentPopup(false);
@@ -256,7 +261,7 @@ export default function ComponentView() {
   }
 
   const handleNewComponent = () => {
-    setNewRows([...newRows, {name: "", type: "", weightage: 0}]);
+    setNewRows([...newRows, {name: "", componentType: "", weightage: 0}]);
   }
 
   const loadData = async () => {
@@ -426,7 +431,7 @@ export default function ComponentView() {
         />
       </Paper>
 
-      {/* EDIT Component Form */}
+      {/* ADD/EDIT Component Form */}
       <Dialog open={openEditComponentPopup} maxWidth="md" fullWidth={true}>
         <DialogTitle>
           <span>
@@ -452,7 +457,7 @@ export default function ComponentView() {
           </span>
         </DialogTitle>
         <DialogContent>
-          <Form>
+          <Form onSubmit={handleSubmitComponents}>
             <Grid container>
               <span>Edit components</span>
               {editableRows.map((row, index) => {
@@ -462,6 +467,7 @@ export default function ComponentView() {
                       <span style={{ display: "block", float: "left" }}>
                         <Controls.Input
                           label="Component Name"
+                          required
                           value={row.name}
                           onChange={(e) => {
                             let updated = [...editableRows];
@@ -476,6 +482,7 @@ export default function ComponentView() {
                       <span style={{ display: "block", float: "left" }}>
                         <Controls.Input
                           label="Component Type"
+                          required
                           value={row.componentType}
                           onChange={(e) => {
                             let updated = [...editableRows];
@@ -499,6 +506,7 @@ export default function ComponentView() {
                           name="ComponentWeight"
                           value={row.weightage}
                           row="1"
+                          required
                           type="number"
                           onChange={(e) => {
                             if (e.target.value < 0 || e.target.value > 100) {
@@ -530,6 +538,7 @@ export default function ComponentView() {
                           value={row.name}
                           name="ComponentId"
                           row="1"
+                          required
                           onChange={(e) => {
                             let updated = [...newRows];
                             updated[index].name = e.target.value;
@@ -544,6 +553,7 @@ export default function ComponentView() {
                           value={row.componentType}
                           name="ComponentType"
                           row="1"
+                          required
                           onChange={(e) => {
                             let updated = [...newRows];
                             updated[index].componentType = e.target.value;
@@ -565,6 +575,7 @@ export default function ComponentView() {
                           value={row.weightage}
                           row="1"
                           type="number"
+                          required
                           onChange={(e) => {
                             if (e.target.value < 0 || e.target.value > 100) {
                               return;
@@ -601,7 +612,7 @@ export default function ComponentView() {
                   }}
                 >
                   <Controls.Button
-                    onClick={handleSubmitComponents}
+                    type="submit"
                     text="Submit"
                   />
                   <Controls.Button

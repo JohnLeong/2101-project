@@ -6,7 +6,7 @@ class ComponentManagement {
 
   //Not tested, idk if working
   static async addComponent(component, moduleId) {
-    await fetch(createComponentUrl + moduleId, {
+    fetch(createComponentUrl + moduleId, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
@@ -17,6 +17,17 @@ class ComponentManagement {
         componentType: component.getType(),
         weightage: component.getWeightage(),
       }),
+    })
+    .then((res) => {
+      if (res.ok) {
+        console.log("Add component ok");
+        return;
+      } else {
+        throw new Error("An error occurred");
+      }
+    })
+    .catch((err) => {
+      console.error("Error: " + err);
     });
   }
 
