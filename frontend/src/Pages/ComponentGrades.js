@@ -1,5 +1,7 @@
 import React, { Fragment, useState } from "react";
+import { getClaims } from '../TokenClaims';
 import ComponentUI from "../Boundaries/ComponentUI"
+import CommentUI from "../Boundaries/CommentUI";
 // core components
 import Button from "../Components/CustomButtons/Button.js";
 //FORM
@@ -228,6 +230,10 @@ export default function ComponentView() {
   const [component, setComponent] = useState({});
   const { componentId } = useParams();
 
+  // for add comments popup
+  const [commentBody, setCommentBody] = useState("");
+  const [submittingAddComment, setSubmittingAddComment] = useState(false);
+
   React.useEffect(() => {
     console.log("Page loaded!");
 
@@ -320,6 +326,25 @@ export default function ComponentView() {
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
+  const handleSubmitAddComment = async (event) => {
+    event.preventDefault();
+
+    if (submittingAddComment) {
+      return;
+    }
+    
+    //prevent codes from running in between addComment process
+    setSubmittingAddComment(true);
+    
+    //send to boundary class
+    const results = await CommentUI.addComment(componentId,selectedIds,getClaims().userId,commentBody);
+    console.log(results);
+
+    setOpenAddPopup(false);
+    setCommentBody();
+    setSubmittingAddComment(false);
+  }
+
   /****************** IMPORT MARKS ******************/
   const [submitting, setSubmitting] = useState(false);
 
@@ -335,7 +360,7 @@ export default function ComponentView() {
 
   // handle the user-selected file 
   const importChange = async (event) => {
-    await ComponentUI.displayFileDialog(event, [submitting, setSubmitting], "5f8ed1b166ea0039a87b3bf3");
+    await ComponentUI.displayFileDialog(event, [submitting, setSubmitting], componentId);
   };
 
   /****************** RETURN HTML ******************/
@@ -561,13 +586,29 @@ export default function ComponentView() {
                   name="StudentId"
                 />
                 <Controls.InputLarge
+                  id="commentInput"
                   name="CommentId"
                   label="Enter Comments Here"
                   rows={20}
+                  onChange={(e) => {
+                    setCommentBody(e.target.value);
+                  }}
                 />
                 <div>
-                  <Controls.Button type="submit" text="Submit" />
-                  <Controls.Button text="Reset" color="default" />
+                <Controls.Button 
+                  type="submit" 
+                  text="Submit" 
+                  onClick={handleSubmitAddComment}
+                  />
+                  <Controls.Button 
+                  text="Reset" 
+                  color="default"
+                  onClick={(e) => {
+                    setCommentBody();
+                    document.getElementById("commentInput").value=null;
+                    document.getElementById("commentInput").focus();
+                  }}
+                  />
                 </div>
               </Grid>
             </Grid>

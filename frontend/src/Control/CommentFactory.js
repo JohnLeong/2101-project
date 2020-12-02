@@ -57,6 +57,8 @@ class CommentFactory {
         console.error(results);
     });
     
+    console.log(newComment.getCommentType() + " comments created!");
+    
     // return true = successful, false = error
     return results;
   }
