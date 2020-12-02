@@ -3,10 +3,8 @@ import { createComponentUrl, getComponentUrl, getModuleComponentsUrl, updateComp
 import Component from "../Entities/Component.js"
 
 class ComponentManagement {
-
-  //Not tested, idk if working
   static async addComponent(component, moduleId) {
-    fetch(createComponentUrl + moduleId, {
+    await fetch(createComponentUrl + moduleId, {
       method: "POST",
       headers: {
         Authorization: "Bearer " + Cookies.get("token"),
@@ -18,20 +16,8 @@ class ComponentManagement {
         weightage: component.getWeightage(),
       }),
     })
-    .then((res) => {
-      if (res.ok) {
-        console.log("Add component ok");
-        return;
-      } else {
-        throw new Error("An error occurred");
-      }
-    })
-    .catch((err) => {
-      console.error("Error: " + err);
-    });
   }
 
-  //tested and working
   static async updateComponent(component) {
     await fetch(updateComponentUrl + component.getId(), {
       method: "PUT",

@@ -28,6 +28,8 @@ import Box from '@material-ui/core/Box';
 import Collapse from '@material-ui/core/Collapse';
 import ComponentManagement from "../Control/ComponentManagement";
 import Component from "../Entities/Component";
+import SubComponentManagement from "../Control/SubComponentManagement";
+import SubComponent from "../Entities/Subcomponent";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -203,6 +205,9 @@ export default function ComponentView() {
   const [rows, setRows] = useState([]);
   const [editableRows, setEditableRows] = useState([]);
   const [newRows, setNewRows] = useState([]);
+  const [targetRow, setTargetRow] = useState(null); //The target row that is having its subcomponents editted
+  const [editableSubcomponentRows, setEditableSubcomponentRows] = useState([]);
+  const [newSubcomponentRows, setNewSubcomponentRows] = useState([]);
   const { moduleId } = useParams();
   const history = useHistory();
   const [submittingComponent, setSubmittingComponent] = useState(false);
@@ -243,6 +248,7 @@ export default function ComponentView() {
     }
 
     setSubmittingComponent(true);
+    setOpenEditComponentPopup(false);
     editableRows.forEach(async (row) => {
       await ComponentManagement.updateComponent(new Component(row._id, row.name, row.componentType, row.weightage));
     });
@@ -250,7 +256,44 @@ export default function ComponentView() {
       await ComponentManagement.addComponent(new Component(null, row.name, row.componentType, row.weightage), moduleId);
     });
 
-    setOpenEditComponentPopup(false);
+    setRows([]);
+    setEditableRows([]);
+    setNewRows([]);
+
+    await loadData();
+
+    setSubmittingComponent(false);
+  }
+
+  const handleSubmitSubcomponents = async (event) => {
+    event.preventDefault();
+    if (submittingComponent) {
+      return;
+    }
+
+    let totalWeightage = 0;
+    editableSubcomponentRows.forEach((row) => {
+      totalWeightage += parseInt(row.weightage);
+    });
+    newSubcomponentRows.forEach((row) => {
+      totalWeightage += parseInt(row.weightage);
+    });
+
+    if (totalWeightage != 100){
+      alert("Weightage must add up to 100");
+      console.log("Weightage must add up to 100, current weightage: " + totalWeightage);
+      return;
+    }
+
+    setSubmittingComponent(true);
+    setOpenEditSubcomponentPopup(false);
+    editableSubcomponentRows.forEach(async (row) => {
+      await SubComponentManagement.updateSubComponent(new SubComponent(row._id, row.name, row.weightage, {}));
+    });
+    newSubcomponentRows.forEach(async (row) => {
+      await SubComponentManagement.createSubComponent(new SubComponent(null, row.name, row.weightage, {}), targetRow._id);
+    });
+
     setRows([]);
     setEditableRows([]);
     setNewRows([]);
@@ -262,6 +305,16 @@ export default function ComponentView() {
 
   const handleNewComponent = () => {
     setNewRows([...newRows, {name: "", componentType: "", weightage: 0}]);
+  }
+  const handleNewSubComponent = () => {
+    setNewSubcomponentRows([...newSubcomponentRows, {name: "", weightage: 0}]);
+  }
+
+  const handleDisplayEditSubcomponent = (row) => {
+    setTargetRow(row);
+    setEditableSubcomponentRows(row.subcomponents);
+    setNewSubcomponentRows([]);
+    setOpenEditSubcomponentPopup(true);
   }
 
   const loadData = async () => {
@@ -342,7 +395,7 @@ export default function ComponentView() {
                         </StyledTableCell>
                         <StyledTableCell align="center">
                           <Button
-                            onClick={() => setOpenEditSubcomponentPopup(true)}
+                            onClick={() => handleDisplayEditSubcomponent(row)}
                             style={{ backgroundColor: "#C36A33" }}
                             tabIndex="0"
                             type="button"
@@ -527,7 +580,7 @@ export default function ComponentView() {
               <br />
               <br />
               <br />
-              <span>Add components</span>
+              <div style={{width:"100%"}}>Add components</div>
               {newRows.map((row, index) => {
                 return (
                   <Grid item xs={12} key={"new" + index}>
@@ -637,16 +690,16 @@ export default function ComponentView() {
           <span>
             <span
               style={{
-                fontSize: "40px",
+                fontSize: "30px",
                 fontWeight: "bold",
                 display: "block",
                 float: "left",
                 marginRight: "0px",
               }}
             >
-              &nbsp; Edit SubComponent
+              Add/Edit Subcomponent
             </span>
-            <span style={{ marginLeft: "-100px" }}>
+            <span style={{ marginLeft: "-23px" }}>
               <Controls.ActionButton
                 onClick={() => setOpenEditSubcomponentPopup(false)}
                 color="secondary"
@@ -657,44 +710,122 @@ export default function ComponentView() {
           </span>
         </DialogTitle>
         <DialogContent>
-          <Form>
+          <Form onSubmit={handleSubmitSubcomponents}>
             <Grid container>
+              {editableSubcomponentRows.length < 1 ? <p>No existing subcomponents</p>
+              : <div style={{width:"100%"}}>Edit subcomponents</div>}
+              {editableSubcomponentRows.map((row, index) => {
+                return (
+                  <Grid item xs={12} key={row._id}>
+                    <span>
+                      <span style={{ display: "block", float: "left" }}>
+                        <Controls.Input
+                          label="Subcomponent Name"
+                          required
+                          value={row.name}
+                          onChange={(e) => {
+                            let updated = [...editableSubcomponentRows];
+                            updated[index].name = e.target.value;
+                            setEditableSubcomponentRows(updated);
+                          }}
+                          name="ComponentId"
+                          row="1"
+                          style={{ width: 650, marginBottom: 10 }}
+                        />
+                      </span>                 
+                      <span
+                        style={{
+                          display: "block",
+                          float: "left",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Controls.Input
+                          label="Subcomponent Weight"
+                          name="SubcomponentWeight"
+                          value={row.weightage}
+                          row="1"
+                          required
+                          type="number"
+                          onChange={(e) => {
+                            if (e.target.value < 0 || e.target.value > 100) {
+                              return;
+                            }
+                            let updated = [...editableSubcomponentRows];
+                            updated[index].weightage = e.target.value;
+                            setEditableSubcomponentRows(updated);
+                          }}
+                          style={{ width: 200, marginBottom: 10 }}
+                        />
+                      </span>
+                    </span>
+                  </Grid>
+                );
+              })}
+              <br />
+              <br />
+              <br />
+              <br />
+              <div style={{width:"100%"}}>Add subcomponents</div>
+              {newSubcomponentRows.map((row, index) => {
+                return (
+                  <Grid item xs={12} key={"new" + index}>
+                    <span>
+                      <span style={{ display: "block", float: "left" }}>
+                        <Controls.Input
+                          label="Subcomponent Name"
+                          value={row.name}
+                          name="SubcomponentName"
+                          row="1"
+                          required
+                          onChange={(e) => {
+                            let updated = [...newSubcomponentRows];
+                            updated[index].name = e.target.value;
+                            setNewSubcomponentRows(updated);
+                          }}
+                          style={{ width: 650, marginBottom: 10 }}
+                        />
+                      </span>
+                      <span
+                        style={{
+                          display: "block",
+                          float: "left",
+                          textAlign: "center",
+                        }}
+                      >
+                        <Controls.Input
+                          label="Subcomponent Weight"
+                          name="SubcomponentWeight"
+                          value={row.weightage}
+                          row="1"
+                          type="number"
+                          required
+                          onChange={(e) => {
+                            if (e.target.value < 0 || e.target.value > 100) {
+                              return;
+                            }
+                            let updated = [...newSubcomponentRows];
+                            updated[index].weightage = e.target.value;
+                            setNewSubcomponentRows(updated);
+                          }}
+                          style={{ width: 200, marginBottom: 10 }}
+                        />
+                      </span>
+                    </span>
+                  </Grid>
+                );
+              })}
+              <div
+                style={{
+                  display: "block",
+                  clear: "both",
+                  margin: "auto",
+                }}
+              >
+                <Controls.Button text="+" onClick={handleNewSubComponent} />
+              </div>
+              <br />
               <Grid item xs={12}>
-                <span>
-                  <span style={{ display: "block", float: "left" }}>
-                    <Controls.Input
-                      label="SubComponent Name"
-                      defaultValue="Quiz 1"
-                      name="SubComponentId"
-                      row="1"
-                      style={{ width: 430, marginBottom: 10 }}
-                    />
-                  </span>
-                  <span style={{ display: "block", float: "left" }}>
-                    <Controls.Input
-                      label="SubComponent Type"
-                      name="SubComponentType"
-                      defaultValue="Quiz"
-                      row="1"
-                      style={{ width: 220, marginBottom: 10 }}
-                    />
-                  </span>
-                  <span
-                    style={{
-                      display: "block",
-                      float: "left",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Controls.Input
-                      label="SubComponent Weight"
-                      name="SubComponentWeight"
-                      defaultValue="30%"
-                      row="1"
-                      style={{ width: 190, marginBottom: 10 }}
-                    />
-                  </span>
-                </span>
                 <div
                   style={{
                     display: "block",
@@ -704,8 +835,18 @@ export default function ComponentView() {
                     marginTop: "20px",
                   }}
                 >
-                  <Controls.Button type="submit" text="Submit" />
-                  <Controls.Button text="Reset" color="default" />
+                  <Controls.Button
+                    type="submit"
+                    text="Submit"
+                  />
+                  <Controls.Button
+                    text="Reset"
+                    color="default"
+                    onClick={() => {
+                      setNewSubcomponentRows([]);
+                      setEditableRows(JSON.parse(JSON.stringify(targetRow.subcomponents)));
+                    }}
+                  />
                 </div>
               </Grid>
             </Grid>

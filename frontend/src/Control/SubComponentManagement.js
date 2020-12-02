@@ -5,10 +5,7 @@ import Component from "../Entities/Component.js";
 import SubComponent from "../Entities/Subcomponent.js";
 
 class SubComponentManagement {
-    static async createSubComponent(componentId, name, weightage) {
-        let data;
-        // new object
-        var subcomponent = new SubComponent(1, name, weightage,[]);
+    static async createSubComponent(subcomponent, componentId) {
         await fetch(createSubComponentUrl + componentId, {
             method: "POST",
             headers: {
@@ -20,17 +17,17 @@ class SubComponentManagement {
                 weightage: subcomponent.getWeightage(),
             }),
         })
-        .then((result) => result.json())
-        .then((json) => {
-            data = json;
-            console.log(data);
+        .then((result) => {
+            if (result.ok) {
+                console.log("Add subcomponent ok");
+                return;
+              } else {
+                throw new Error("An error occurred");
+              }
         })
         .catch((err) => {
-            data = err;
-            console.error(data);
+            console.error("Error: " + err);
         });
-
-        return data;
     }
     
     //edit a subcomponent by id
