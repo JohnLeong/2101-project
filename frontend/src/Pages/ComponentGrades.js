@@ -276,10 +276,19 @@ export default function ComponentView() {
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.studentID);
-      setSelected(newSelecteds);
+      const newSelectedId = rows.map((id) => id._id);
+      setSelected(newSelecteds);      
+      setSelectedIds(newSelectedId);
+
+      let idString = " ";
+      newSelecteds.forEach((id) => idString += id + ", ");
+      setSelectedString(idString);
+
       return;
     }
     setSelected([]);
+    setSelectedIds([]);
+    setSelectedString("");
   };
 
   const handleClick = (event, _id, studentID) => {
