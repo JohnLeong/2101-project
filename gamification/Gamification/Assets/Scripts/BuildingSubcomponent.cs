@@ -7,7 +7,7 @@ public class BuildingSubcomponent : MonoBehaviour
     public SubComponent SubComponent { get; private set; }
     public int Height { get; private set; }
 
-    private static Color selectedColor = Color.red;
+    private static Color selectedColor = Color.cyan;
 
     private MeshRenderer[] meshes;
     private Color unselectedColor = Color.white;

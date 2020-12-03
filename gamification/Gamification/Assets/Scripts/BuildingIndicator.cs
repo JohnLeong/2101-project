@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BuildingIndicator : MonoBehaviour
 {
-    private static Color unselectedColor = Color.yellow;
-    private static Color selectedColor = Color.red;
+    private static Color unselectedColor = Color.white;
+    private static Color selectedColor = Color.cyan;
 
     private void Awake()
     {

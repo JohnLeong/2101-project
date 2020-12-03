@@ -174,10 +174,14 @@ public class GamificationManager : MonoBehaviourSingleton<GamificationManager>
 
     private Color GetStandingColor(float standingPercentile)
     {
-        if (standingPercentile < 10.0f)
+        if (standingPercentile < 1.0f)   //First in class
             return standingColors[0];
-        if (standingPercentile < 51.0f)
+        if (standingPercentile < 10.0f)  //Second in class
             return standingColors[1];
+        if (standingPercentile < 15.0f)  //Third in class
+            return standingColors[2];
+        if (standingPercentile < 50.0f)  //Top 50%
+            return standingColors[3];
 
         return standingColors[standingColors.Length - 1];
     }
