@@ -1,6 +1,5 @@
-import CommentFactory from "../Control/CommentFactory";
-import ComponentManagement from "../Control/ComponentManagement";
-import ComponentUI from "./ComponentUI";
+import CommentFactory from "../Control/CommentFactory.js";
+import CommentManagement from "../Control/CommentManagement.js"
 
 class CommentUI {
     static async displayComments() {

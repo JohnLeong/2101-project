@@ -27,17 +27,17 @@ import ClassGrades from "./Pages/ClassGrades";
 //External endpoints (backend)
 export const backendUrl = "http://localhost:5000/";
 
-export const loginUrl = backendUrl + "user/login";                                //POST
+export const loginUrl = backendUrl + "user/login";                                      //POST
 
-export const createComponentUrl = backendUrl + "component/new/";                  //POST, component/new/<moduleId>
-export const getComponentUrl = backendUrl + "component/";                         //GET, component/<componentId>
-export const updateComponentUrl = backendUrl + "component/";                      //PUT, component/<componentId>
-export const getUserModulesUrl = backendUrl + "module/usermodules/";              //GET
-export const getModuleInfoUrl = backendUrl + "module/";                           //GET module/<moduleId>
-export const getClassGradesUrl = backendUrl + "component/lecturer/grades/";       //GET component/lecturer/grades/<classId>
-export const getModuleComponentsUrl = backendUrl + "component/inmodule/";         //GET component/inmodule/<moduleId>
-export const getComponentGradesUrl = backendUrl + "component/lecturer/";          //GET component/lecturer/<componentId>
-export const isCompleteUrl = backendUrl + "component/lecturer/";                     //GET component/lecturer/<componentId>/<studentId>
+export const createComponentUrl = backendUrl + "component/new/";                        //POST, component/new/<moduleId>
+export const getComponentUrl = backendUrl + "component/";                               //GET, component/<componentId>
+export const updateComponentUrl = backendUrl + "component/";                            //PUT, component/<componentId>
+export const getUserModulesUrl = backendUrl + "module/usermodules/";                    //GET
+export const getModuleInfoUrl = backendUrl + "module/";                                 //GET module/<moduleId>
+export const getClassGradesUrl = backendUrl + "component/lecturer/grades/";             //GET component/lecturer/grades/<classId>
+export const getModuleComponentsUrl = backendUrl + "component/inmodule/";               //GET component/inmodule/<moduleId>
+export const getComponentGradesUrl = backendUrl + "component/lecturer/";                //GET component/lecturer/<componentId>
+export const isCompleteUrl = backendUrl + "component/lecturer/";                        //GET component/lecturer/<componentId>/<studentId>
 
 export const createSubComponentUrl = backendUrl + "subcomponent/new/";                  //POST, subcomponent/new/<componentId>
 export const updateSubComponentUrl = backendUrl + "subcomponent/";                      //PUT, subcomponent/<subcomponentId>
@@ -46,7 +46,9 @@ export const updateStudentMarksUrl = backendUrl + "subcomponent/edit/studentmark
 export const importMarksUrl = backendUrl + "subcomponent/new/importmarks/";             //PUT, subcomponent/new/importmarks/<componentId>
 // getStudentMarks()
 
-export const createCommentUrl = backendUrl + "comment/new/";                         //POST, comment/new/<componentId>
+export const createCommentUrl = backendUrl + "comment/new/";                            //POST, comment/new/<componentId>
+export const updateCommentUrl = backendUrl + "comment/";                                //PUT, comment/<commentId>
+export const getComponentCommentsUrl = backendUrl + "comment/component/";               //GET, comment/component/<componentId>
 
 //Internal (frontend)
 export const modulesUrl = "/admin/dashboard";

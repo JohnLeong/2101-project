@@ -34,6 +34,21 @@ router
     });
 
 
+//Route: GET ...url.../comment/component/<componentId>
+//Roles: Lecturer
+//Get comments based on component
+router
+    .route("/component/:componentId")
+    .all(authenticateJWT([1]))
+    .get(async (req, res) => {
+        await Component.findById(req.params.componentId)
+            .populate("comments")
+            .exec()
+            .then((component) => res.json(component))
+            .catch((err) => res.status(400).json("Error: " + err));
+        });
+        
+
 //Route: POST ...url.../comment/new/<componentId>
 //Roles: Lecturer
 //Add a new comment to a component
