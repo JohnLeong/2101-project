@@ -46,7 +46,7 @@ class SubComponentManagement {
     }
 
     // getting subcomponent by id
-    static async getAllSubComponent() {
+    static async getAllSubComponents() {
         let data;
         await fetch(getSubComponentUrl + "all",{
             method: "GET",

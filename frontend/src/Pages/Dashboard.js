@@ -9,7 +9,6 @@ import GridItem from "../Components/Grid/GridItem.js";
 import GridContainer from "../Components/Grid/GridContainer.js";
 import Card from "../Components/Card/Card.js";
 import CardBody from "../Components/Card/CardBody.js";
-import Cookies from "js-cookie";
 
 import styles from "../assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
@@ -17,9 +16,9 @@ import styles from "../assets/jss/material-dashboard-react/views/dashboardStyle.
 import image1 from "../assets/img/Module1.jpg";
 // import image2 from "../assets/img/Module2.jpg";
 // import image3 from "../assets/img/Module3.jpeg";
-import { getUserModulesUrl } from "../routes.js";
 
 import "../App.css";
+import ModuleManagement from "../Control/ModuleManagement.js";
 
 const useStyles = makeStyles(styles);
 
@@ -32,28 +31,9 @@ export default function Dashboard() {
   React.useEffect(() => {
     console.log("Page loaded!");
 
-    const loadData = () => {
-      fetch(getUserModulesUrl, {
-        method: "GET",
-        headers: {
-          Authorization: "Bearer " + Cookies.get("token"),
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => {
-          if (res.ok) {
-            return res.json();
-          } else {
-            throw new Error("An error occurred");
-          }
-        })
-        .then((jsonData) => {
-          setModuleData(jsonData);
-          console.log(jsonData);
-        })
-        .catch((err) => {
-          console.error("Error: " + err);
-        });
+    const loadData = async () => {
+      let data = await ModuleManagement.getAllModules();
+      setModuleData(data);
     };
 
     loadData();

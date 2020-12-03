@@ -2,32 +2,32 @@ import ComponentManagement from "../Control/ComponentManagement";
 import SubComponentManagement from "../Control/SubComponentManagement";
 
 class ComponentUI {
-    static async displayAllComponents() {
-        
+    static async displayAllComponents(moduleId) {
+        return await ComponentManagement.getAllComponents(moduleId);
     }
 
-    static async displayComponent() {
-
+    static async displayComponent(componentId) {
+        return await ComponentManagement.getComponent(componentId);
     }
 
     static async displayAddComponentForm() {
-
+        return true;
     }
 
     static async displayAllSubComponents() {
-
+        return await SubComponentManagement.getAllSubComponents();
     }
 
-    static async displaySubComponent() {
-
+    static async displaySubComponent(subcomponentId) {
+        return await SubComponentManagement.getSubComponent(subcomponentId);
     }
 
-    static async validEntry() {
-        
+    static validEntry() {
+        return true;
     }
 
-    static async invalidEntry() {
-        return 0
+    static invalidEntry(message) {
+        alert(message);
     }
 
     static async displayFileDialog(event, [submitting, setSubmitting], componentId) {

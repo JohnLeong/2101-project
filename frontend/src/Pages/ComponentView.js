@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import { useHistory, useParams } from 'react-router-dom';
 // core components
 import Button from "../Components/CustomButtons/Button.js";
@@ -30,6 +30,7 @@ import Component from "../Entities/Component";
 import SubComponentManagement from "../Control/SubComponentManagement";
 import SubComponent from "../Entities/Subcomponent";
 import ModuleManagement from "../Control/ModuleManagement.js";
+import ComponentUI from "../Boundaries/ComponentUI.js";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -67,21 +68,6 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 /********************************** ROW DATA **********************************/
-function createData(component, weightage, s, w) {
-  return { 
-    component, 
-    weightage, 
-    subcomponent: [{sc: s, weight: w}],
-    open:false
-  };
-}
-
-const rowsOld = [
-  createData('Quiz', '40%','Quiz 1', '10%' ),
-  createData('Project', '20%', 'Project 1', '20%'),
-];
-
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -241,9 +227,8 @@ export default function ComponentView() {
       totalWeightage += parseInt(row.weightage);
     });
 
-    if (totalWeightage != 100){
-      alert("Weightage must add up to 100");
-      console.log("Weightage must add up to 100, current weightage: " + totalWeightage);
+    if (totalWeightage !== 100){
+      ComponentUI.invalidEntry("Total weightage must add up to 100");
       return;
     }
 
@@ -279,12 +264,12 @@ export default function ComponentView() {
       totalWeightage += parseInt(row.weightage);
     });
 
-    if (totalWeightage != 100){
-      alert("Weightage must add up to 100");
-      console.log("Weightage must add up to 100, current weightage: " + totalWeightage);
+    if (totalWeightage !== 100){
+      ComponentUI.invalidEntry("Total weightage must add up to 100");
       return;
     }
-
+    
+    ComponentUI.validEntry();
     setSubmittingComponent(true);
     setOpenEditSubcomponentPopup(false);
     editableSubcomponentRows.forEach(async (row) => {
