@@ -49,7 +49,6 @@ class ComponentManagement {
     return data;
   }
 
-  //Tested and working
   static async getComponent(componentId) {
     let data;
     await fetch(getComponentUrl + componentId, {
@@ -67,19 +66,7 @@ class ComponentManagement {
   }
 
   static calculateGrade(subcomponents, studentId) {
-    let scoredMarks = 0;
-    let maximumMarks = 0;
-
-    for (let i = 0; i < subcomponents.length; ++i) {
-      let marks = subcomponents[i].getStudentMarks()[studentId];
-      maximumMarks += 100 * subcomponents[i].weightage;
-
-      if (typeof marks !== "undefined") {
-        scoredMarks += marks * subcomponents[i].weightage;
-      }
-    }
-
-    const marksPercentage = scoredMarks / maximumMarks;
+    const marksPercentage = ComponentManagement.calculateMarksPercentage(subcomponents, studentId);
     let grade;
     if (marksPercentage >= 84)
       grade = 'A';

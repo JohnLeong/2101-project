@@ -1,25 +1,14 @@
 import React from 'react'
 import { Redirect, Route } from 'react-router-dom'
-import Cookies from 'js-cookie'
-import { getClaims } from '../TokenClaims';
+import AuthenticationManagement from '../Control/AuthenticationManagement';
 
 const PrivateRoute = ({ component: Component, roles, ...rest }) => {
-
-  const isLoggedIn = Cookies.get("token") != null;
-  const isAuthorized = roles.includes(getClaims().role);
-
-  console.log("Logged in");
-  console.log(isLoggedIn);
-  console.log("Auth");
-  console.log(isAuthorized);
-  console.log("Role");
-  console.log(getClaims().role);
-
+  
   return (
     <Route
       {...rest}
       render={props =>
-        (isLoggedIn && isAuthorized) ? (
+        (AuthenticationManagement.authenticateUser(roles)) ? (
           <Component {...props} />
         ) : (
           <Redirect to={{ pathname: '/login', state: { from: props.location } }} />

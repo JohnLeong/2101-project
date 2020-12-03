@@ -1,8 +1,12 @@
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie'
+import { getClaims } from '../TokenClaims';
 
 class AuthenticationManagement {
-    static async authenticateUser() {
+    static authenticateUser(allowedRoles) {
+        const isLoggedIn = Cookies.get("token") != null;
+        const isAuthorized = allowedRoles.includes(getClaims().role);
 
+        return isLoggedIn && isAuthorized;
     }
 }
 

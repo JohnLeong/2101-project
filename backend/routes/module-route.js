@@ -102,10 +102,10 @@ router
         var sortedArray =  [...classMarks].sort((a, b) => a[0] < b[0] ? 1 : -1);
         const indexPosition = sortedArray.findIndex((item) => item[1].includes(req.user.userId));
 
-        if (indexPosition == -1){
+        if (indexPosition == -1 || sortedArray.length < 2){
           componentObject.standingPercentile = 100;
         } else {
-          componentObject.standingPercentile = ((indexPosition + 1) / sortedArray.length) * 100;
+          componentObject.standingPercentile = ((indexPosition) / moduleClass.students.length) * 100;
         }
 
         //Subcomponents

@@ -52,6 +52,7 @@ router
         const newSubcomponent = new Subcomponent({
             name: name,
             weightage: weightage,
+            studentMarks: {},
         });
 
         newSubcomponent
