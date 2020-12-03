@@ -230,7 +230,7 @@ router
           classResults.push([student.name, student.email, standing, grade]);
         });
 
-      res.json({classId : moduleClass.id, results : classResults});
+      res.json({className: moduleClass.name, classId : moduleClass.id, results : classResults});
 
     } catch (err) {
       (err) => res.status(400).json("Error: " + err);

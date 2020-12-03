@@ -14,6 +14,7 @@ import styles from "../assets/jss/material-dashboard-react/views/dashboardStyle.
 
 // Images
 import ClassManagement from "../Control/ClassManagement";
+import ModuleManagement from "../Control/ModuleManagement.js";
 
 const useStyles = makeStyles(styles);
 
@@ -22,7 +23,7 @@ export default function Dashboard() {
   const classes = useStyles();
   const { moduleId } = useParams();
   const history = useHistory();
-
+  const [moduleInfo, setModuleInfo] = React.useState(null);
   const [moduleclasses, setClasses] = React.useState(null);
   
 
@@ -31,7 +32,9 @@ export default function Dashboard() {
 
     const loadData = async () => {
       const classes = await ClassManagement.getAllClasses(moduleId);
+      const module = await ModuleManagement.getModule(moduleId);
       setClasses(classes);
+      setModuleInfo(module);
     };
 
     loadData();
@@ -45,7 +48,7 @@ export default function Dashboard() {
 
   return (
     <div className={classes.root}>
-      <div><h3>Component Name Here</h3></div>
+      <div><h3>{moduleInfo ? moduleInfo.name : ""}</h3></div>
       <GridContainer>
         {moduleclasses == null ? (
           <p key="loading">Loading</p>

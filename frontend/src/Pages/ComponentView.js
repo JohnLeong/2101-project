@@ -1,5 +1,4 @@
 import React, { Fragment, useState } from "react";
-import ComponentUI from "../Boundaries/ComponentUI"
 import { useHistory, useParams } from 'react-router-dom';
 // core components
 import Button from "../Components/CustomButtons/Button.js";
@@ -30,6 +29,7 @@ import ComponentManagement from "../Control/ComponentManagement";
 import Component from "../Entities/Component";
 import SubComponentManagement from "../Control/SubComponentManagement";
 import SubComponent from "../Entities/Subcomponent";
+import ModuleManagement from "../Control/ModuleManagement.js";
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -155,7 +155,6 @@ function EnhancedTableHead(props) {
 
 EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
@@ -211,6 +210,7 @@ export default function ComponentView() {
   const { moduleId } = useParams();
   const history = useHistory();
   const [submittingComponent, setSubmittingComponent] = useState(false);
+  const [moduleInfo, setModuleInfo] = React.useState(null);
   
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -319,6 +319,8 @@ export default function ComponentView() {
 
   const loadData = async () => {
     const results = await ComponentManagement.getAllComponents(moduleId);
+    const module = await ModuleManagement.getModule(moduleId);
+    setModuleInfo(module);
     setRows(results);
     setEditableRows(JSON.parse(JSON.stringify(results))); //Deep copy
   };
@@ -333,6 +335,7 @@ export default function ComponentView() {
   /****************** RETURN HTML ******************/
   return (
     <div className={classes.root}>
+      <div><h3>{moduleInfo ? moduleInfo.name : ""}</h3></div>
       <div className={classes.buttonDiv}>
         <Button
           onClick={() => setOpenEditComponentPopup(true)}
@@ -348,7 +351,7 @@ export default function ComponentView() {
           type="button"
           style={{ backgroundColor: "#139DAE" }}
         >
-          <span className="MuiButton-label">View class grades (temp)</span>
+          <span className="MuiButton-label">View classes</span>
           <span className="MuiTouchRipple-root"></span>
         </Button>
       </div>
@@ -417,7 +420,7 @@ export default function ComponentView() {
                             type="button"
                           >
                             <span className="MuiButton-label">
-                              Component grades
+                              View component grades
                             </span>
                             <span className="MuiTouchRipple-root"></span>
                           </Button>

@@ -160,6 +160,7 @@ export default function ClassList() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [classData, setClassData] = React.useState([]);
+  const [className, setClassName] = React.useState("");
     
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -182,8 +183,8 @@ export default function ClassList() {
 
     const loadData = async () => {
       const results = await ClassManagement.getClass(classId);
-      console.log(results);
-      setClassData(results);
+      setClassName(results.className);
+      setClassData(results.classData);
     };
 
     loadData();
@@ -192,7 +193,7 @@ export default function ClassList() {
 
   return (
     <div className={classes.root}>
-      <div><h3>Class Name Here</h3></div>
+      <div><h3>{className}</h3></div>
       <Paper className={classes.paper}>
         <TableContainer>
           <Table

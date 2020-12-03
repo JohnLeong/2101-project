@@ -41,7 +41,7 @@ class ClassManagement {
       classData.push({studentID: element[1], name: element[0], grade: element[3], rank: element[2]});
     });
 
-    return classData;
+    return {className: data.className, classId: data.classId, classData: classData};
   }
 }
 
