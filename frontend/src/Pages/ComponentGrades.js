@@ -37,20 +37,20 @@ import CommentManagement from "../Control/CommentManagement";
 import Comment from "../Entities/Comment"
 
 const StyledTableSortLabel = withStyles((theme) => ({
-    root: {
+  root: {
+    color: 'white',
+    "&:hover": {
       color: 'white',
-      "&:hover": {
-        color: 'white',
-      },
-      '&$active': {
-        color: 'white',
-      },
     },
-    active: {},
-    icon: {
-      color: 'inherit !important'
+    '&$active': {
+      color: 'white',
     },
-  })
+  },
+  active: {},
+  icon: {
+    color: 'inherit !important'
+  },
+})
 )(TableSortLabel);
 
 const StyledTableCell = withStyles((theme) => ({
@@ -73,13 +73,14 @@ const StyledTableRow = withStyles((theme) => ({
 
 /********************************** ROW DATA **********************************/
 function createData(studentID, classgroup, name, grade, comment, s, m) {
-  return { studentID, 
-    classgroup, 
-    name, 
-    grade, 
+  return {
+    studentID,
+    classgroup,
+    name,
+    grade,
     comment,
-    subcomponent: [{sc: s, marks: m}],
-    open:false
+    subcomponent: [{ sc: s, marks: m }],
+    open: false
   };
 }
 
@@ -139,40 +140,40 @@ function EnhancedTableHead(props) {
 
   return (
     <TableHead>
-        <StyledTableRow>
-          {headCells.map((headCell) => (
-            <StyledTableCell
-              key={headCell.id}
-              align={headCell.numeric ? 'left' : 'center'}
-              padding={headCell.disablePadding ? 'none' : 'default'}
-              sortDirection={orderBy === headCell.id ? order : false}
+      <StyledTableRow>
+        {headCells.map((headCell) => (
+          <StyledTableCell
+            key={headCell.id}
+            align={headCell.numeric ? 'left' : 'center'}
+            padding={headCell.disablePadding ? 'none' : 'default'}
+            sortDirection={orderBy === headCell.id ? order : false}
+          >
+            <StyledTableSortLabel
+              active={orderBy === headCell.id}
+              direction={orderBy === headCell.id ? order : 'asc'}
+              onClick={createSortHandler(headCell.id)}
             >
-              <StyledTableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : 'asc'}
-                onClick={createSortHandler(headCell.id)}
-              >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <span className={classes.visuallyHidden}>
-                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                  </span>
-                ) : null}
-              </StyledTableSortLabel>
-            </StyledTableCell>
-          ))}
-          <StyledTableCell padding="checkbox">
-            <Checkbox
-              style={{color: 'white'}}
-              indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={rowCount > 0 && numSelected === rowCount}
-              onChange={onSelectAllClick}
-              inputProps={{ 'aria-label': 'select all students to input comments' }}
-            />
+              {headCell.label}
+              {orderBy === headCell.id ? (
+                <span className={classes.visuallyHidden}>
+                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                </span>
+              ) : null}
+            </StyledTableSortLabel>
           </StyledTableCell>
-        </StyledTableRow>
-        
-      </TableHead>
+        ))}
+        <StyledTableCell padding="checkbox">
+          <Checkbox
+            style={{ color: 'white' }}
+            indeterminate={numSelected > 0 && numSelected < rowCount}
+            checked={rowCount > 0 && numSelected === rowCount}
+            onChange={onSelectAllClick}
+            inputProps={{ 'aria-label': 'select all students to input comments' }}
+          />
+        </StyledTableCell>
+      </StyledTableRow>
+
+    </TableHead>
   );
 }
 
@@ -226,8 +227,8 @@ export default function ComponentView() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [open, setOpen] = React.useState(-1);
-  const  [openAddPopup, setOpenAddPopup] = useState(false);
-  const  [openEditPopup, setOpenEditPopup] = useState(false);
+  const [openAddPopup, setOpenAddPopup] = useState(false);
+  const [openEditPopup, setOpenEditPopup] = useState(false);
   const [rows, setRows] = useState([]);
   const [component, setComponent] = useState({});
   const { componentId } = useParams();
@@ -237,6 +238,11 @@ export default function ComponentView() {
   // for add comments popup
   const [commentBody, setCommentBody] = useState("");
   const [submittingAddComment, setSubmittingAddComment] = useState(false);
+  // for edit marks popup
+  const [openEditMarksPopup, setOpenEditMarksPopup] = useState(false);
+  const [submittingEditMarks, setSubmittingEditMarks] = useState(false);
+  const [currentMarks, setCurrentMarks] = useState(-1);
+  const [editableMarks, setEditableMarks] = useState(-1);
 
   React.useEffect(() => {
     console.log("Page loaded!");
@@ -270,7 +276,7 @@ export default function ComponentView() {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -281,7 +287,7 @@ export default function ComponentView() {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.studentID);
       const newSelectedId = rows.map((id) => id._id);
-      setSelected(newSelecteds);      
+      setSelected(newSelecteds);
       setSelectedIds(newSelectedId);
 
       let idString = " ";
@@ -312,11 +318,11 @@ export default function ComponentView() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),  
+        selected.slice(selectedIndex + 1),
       );
       newSelectedIds = newSelectedIds.concat(
         selectedIds.slice(0, selectedIndex),
-        selectedIds.slice(selectedIndex + 1),  
+        selectedIds.slice(selectedIndex + 1),
       );
     }
     setSelected(newSelected);
@@ -342,10 +348,10 @@ export default function ComponentView() {
     if (submittingAddComment) {
       return;
     }
-    
+
     //prevent codes from running in between editComment process
     setSubmittingAddComment(true);
-    
+
     editableComments.forEach(async (c) => {
       await CommentUI.editComment(new Comment(c._id, c.studentId, c.postedBy, c.body));
     });
@@ -363,17 +369,39 @@ export default function ComponentView() {
     if (submittingAddComment) {
       return;
     }
-    
+
     //prevent codes from running in between addComment process
     setSubmittingAddComment(true);
-    
+
     //send to boundary class
-    const results = await CommentUI.addComment(componentId,selectedIds,getClaims().userId,commentBody);
+    const results = await CommentUI.addComment(componentId, selectedIds, getClaims().userId, commentBody);
     console.log(results);
 
     setOpenAddPopup(false);
     setCommentBody();
     setSubmittingAddComment(false);
+  }
+
+  const handleSubmitEditMarks = async (event) => {
+    event.preventDefault();
+
+    if (submittingEditMarks) {
+      return;
+    }
+
+    //prevent codes from running in between editMarks process
+    setSubmittingEditMarks(true);
+
+    // editableComments.forEach(async (c) => {
+    //   await CommentUI.editComment(new Comment(c._id, c.studentId, c.postedBy, c.body));
+    // });
+
+    console.log("PROCESSING EDIT MARKS");
+    console.log(editableMarks);
+
+    setOpenEditMarksPopup(false);
+    setSubmittingEditMarks(false);
+    //window.location.reload();
   }
 
   /****************** IMPORT MARKS ******************/
@@ -399,6 +427,15 @@ export default function ComponentView() {
     setTargetComments(row.comments);
     setEditableComments(JSON.parse(JSON.stringify(row.comments)));
     setOpenEditPopup(true);
+  }
+
+  // handle edit marks
+  const handleDisplayEditMarks = (rowMarks) => {
+    setEditableMarks(rowMarks);
+    setCurrentMarks(rowMarks);
+    setOpenEditMarksPopup(true);
+
+    console.log(rowMarks);
   }
 
   /****************** RETURN HTML ******************/
@@ -460,121 +497,123 @@ export default function ComponentView() {
                   <td>Loading</td>
                 </tr>
               ) : (
-                stableSort(rows, getComparator(order, orderBy))
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
-                    const isItemSelected = isSelected(row.studentID);
-                    const labelId = `enhanced-table-checkbox-${index}`;
+                  stableSort(rows, getComparator(order, orderBy))
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) => {
+                      const isItemSelected = isSelected(row.studentID);
+                      const labelId = `enhanced-table-checkbox-${index}`;
 
-                    return (
-                      <React.Fragment key={row.studentID}>
-                        <StyledTableRow>
-                          {/********************* INPUT CELL DATA *********************/}
-                          <StyledTableCell>
-                            <IconButton
-                              aria-label="expand row"
-                              size="small"
-                              onClick={() =>
-                                setOpen(open === index ? -1 : index)
-                              }
-                            >
-                              {open === index ? (
-                                <KeyboardArrowUpIcon />
-                              ) : (
-                                <KeyboardArrowDownIcon />
-                              )}
-                            </IconButton>
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.studentID}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            {row.classgroup}
-                          </StyledTableCell>
-                          <StyledTableCell align="left">
-                            {row.name}
-                          </StyledTableCell>
-                          <StyledTableCell align="left">
-                            {row.grade}
-                          </StyledTableCell>
-                          <StyledTableCell align="center">
-                            <Button
-                              onClick={() => handleDisplayEditComments(row)}
-                              style={{ backgroundColor: "#C36A33" }}
-                              tabIndex="0"
-                              type="button"
-                            >
-                              <span className="MuiButton-label">
-                                Edit Comments
+                      return (
+                        <React.Fragment key={row.studentID}>
+                          <StyledTableRow>
+                            {/********************* INPUT CELL DATA *********************/}
+                            <StyledTableCell>
+                              <IconButton
+                                aria-label="expand row"
+                                size="small"
+                                onClick={() =>
+                                  setOpen(open === index ? -1 : index)
+                                }
+                              >
+                                {open === index ? (
+                                  <KeyboardArrowUpIcon />
+                                ) : (
+                                    <KeyboardArrowDownIcon />
+                                  )}
+                              </IconButton>
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {row.studentID}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              {row.classgroup}
+                            </StyledTableCell>
+                            <StyledTableCell align="left">
+                              {row.name}
+                            </StyledTableCell>
+                            <StyledTableCell align="left">
+                              {row.grade}
+                            </StyledTableCell>
+                            <StyledTableCell align="center">
+                              <Button
+                                onClick={() => handleDisplayEditComments(row)}
+                                style={{ backgroundColor: "#C36A33" }}
+                                tabIndex="0"
+                                type="button"
+                              >
+                                <span className="MuiButton-label">
+                                  Edit Comments
                               </span>
-                              <span className="MuiTouchRipple-root"></span>
-                            </Button>
-                          </StyledTableCell>
-                          <StyledTableCell padding="checkbox">
-                            <Checkbox
-                              onClick={(event) =>
-                                handleClick(event, row._id, row.studentID)
-                              }
-                              role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={row.studentID}
-                              selected={isItemSelected}
-                              checked={isItemSelected}
-                              inputProps={{ "aria-labelledby": labelId }}
-                            />
-                          </StyledTableCell>
-                        </StyledTableRow>
-                        <TableRow>
-                          <TableCell
-                            style={{ paddingBottom: 0, paddingTop: 0 }}
-                            colSpan={6}
-                          >
-                            <Collapse
-                              in={open === index}
-                              timeout="auto"
-                              unmountOnExit
+                                <span className="MuiTouchRipple-root"></span>
+                              </Button>
+                            </StyledTableCell>
+                            <StyledTableCell padding="checkbox">
+                              <Checkbox
+                                onClick={(event) =>
+                                  handleClick(event, row._id, row.studentID)
+                                }
+                                role="checkbox"
+                                aria-checked={isItemSelected}
+                                tabIndex={-1}
+                                key={row.studentID}
+                                selected={isItemSelected}
+                                checked={isItemSelected}
+                                inputProps={{ "aria-labelledby": labelId }}
+                              />
+                            </StyledTableCell>
+                          </StyledTableRow>
+                          <TableRow>
+                            <TableCell
+                              style={{ paddingBottom: 0, paddingTop: 0 }}
+                              colSpan={6}
                             >
-                              <Box margin={1}>
-                                <Table
-                                  size="small"
-                                  aria-label="Subcomponent information"
-                                >
-                                  <TableHead>
-                                    <TableRow>
-                                      <TableCell style={{ fontWeight: "700" }}>
-                                        Subcomponent Name
+                              <Collapse
+                                in={open === index}
+                                timeout="auto"
+                                unmountOnExit
+                              >
+                                <Box margin={1}>
+                                  <Table
+                                    size="small"
+                                    aria-label="Subcomponent information"
+                                  >
+                                    <TableHead>
+                                      <TableRow>
+                                        <TableCell style={{ fontWeight: "700" }}>
+                                          Subcomponent Name
                                       </TableCell>
-                                      <TableCell style={{ fontWeight: "700" }}>
-                                        Mark
+                                        <TableCell style={{ fontWeight: "700" }}>
+                                          Mark
                                       </TableCell>
-                                      <TableCell></TableCell>
-                                    </TableRow>
-                                  </TableHead>
-                                  <TableBody>
-                                    {row.subcomponents.map((scRow) => (
-                                      <TableRow key={scRow.sc}>
-                                        <TableCell component="th" scope="row">
-                                          {scRow.sc}
-                                        </TableCell>
-                                        <TableCell>{scRow.marks}</TableCell>
-                                        <TableCell
-                                          style={{ cursor: "pointer" }}
-                                        >
-                                          <EditIcon />
-                                        </TableCell>
+                                        <TableCell></TableCell>
                                       </TableRow>
-                                    ))}
-                                  </TableBody>
-                                </Table>
-                              </Box>
-                            </Collapse>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    );
-                  })
-              )}
+                                    </TableHead>
+                                    <TableBody>
+                                      {row.subcomponents.map((scRow) => (
+                                        <TableRow key={scRow.sc}>
+                                          <TableCell component="th" scope="row">
+                                            {scRow.sc}
+                                          </TableCell>
+                                          <TableCell>{scRow.marks}</TableCell>
+                                          <TableCell
+                                            style={{ cursor: "pointer" }}
+                                          >
+                                            <EditIcon
+                                              onClick={() => handleDisplayEditMarks(scRow.marks)}
+                                            />
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </Box>
+                              </Collapse>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      );
+                    })
+                )}
             </TableBody>
           </Table>
         </TableContainer>
@@ -679,29 +718,29 @@ export default function ComponentView() {
           </span>
         </DialogTitle>
         <DialogContent>
-          <Form  onSubmit={handleSubmitEditComments}>
+          <Form onSubmit={handleSubmitEditComments}>
             <Grid container>
               <Grid item xs={6}>
                 {editableComments.length < 1 ? (
                   <p>No existing comments</p>
                 ) : (
-                  editableComments.map((c, index) => {
-                    return (
-                      <Controls.InputLarge
-                        name="CommentId"
-                        label={c.datePosted + " - " + (c.commentType ? "Summative" : "Formative")}
-                        rows={5}
-                        value={c.body}
-                        key={c._id}
-                        onChange={(e) => {
-                          let updated = [...editableComments];
-                          updated[index].body = e.target.value;
-                          setEditableComments(updated);
-                        }}
-                      />
-                    );
-                  })
-                )}
+                    editableComments.map((c, index) => {
+                      return (
+                        <Controls.InputLarge
+                          name="CommentId"
+                          label={c.datePosted + " - " + (c.commentType ? "Summative" : "Formative")}
+                          rows={5}
+                          value={c.body}
+                          key={c._id}
+                          onChange={(e) => {
+                            let updated = [...editableComments];
+                            updated[index].body = e.target.value;
+                            setEditableComments(updated);
+                          }}
+                        />
+                      );
+                    })
+                  )}
                 <div>
                   {editableComments.length > 0 && (
                     <Controls.Button type="submit" text="Submit" />
@@ -723,6 +762,67 @@ export default function ComponentView() {
           </Form>
         </DialogContent>
       </Dialog>
+      {/* END OF EDIT COMMENTS FORM */}
+      <Dialog open={openEditMarksPopup} maxWidth="md" fullWidth={true}>
+        <DialogTitle>
+          <span>
+            <span
+              style={{
+                fontSize: "40px",
+                fontWeight: "bold",
+                display: "block",
+                float: "left",
+                marginLeft: "0px",
+              }}
+            >
+              &nbsp;Edit Marks
+            </span>
+            <span style={{ marginRight: "0px", float: "right" }}>
+              <Controls.ActionButton
+                onClick={() => setOpenEditMarksPopup(false)}
+                color="secondary"
+              >
+                <CloseIcon fontSize="small" />
+              </Controls.ActionButton>
+            </span>
+          </span>
+        </DialogTitle>
+        <DialogContent>
+          <Form onSubmit={handleSubmitEditMarks}>
+            <Grid container>
+              <Grid item xs={6}>
+                <Controls.Input
+                  id="editMarks"
+                  label="Marks"
+                  name="marks"
+                  value={editableMarks}
+                  row="1"
+                  required
+                  type="number"
+                  onChange={(e) => {
+                    if (e.target.value < 0 || e.target.value > 100) {
+                      return;
+                    }
+                    setEditableMarks(e.target.value);
+                  }}
+                  style={{ width: 200, marginBottom: 10 }}
+                />
+                <div>
+                  <Controls.Button type="submit" text="Submit" />
+                  <Controls.Button
+                    text="Reset"
+                    color="default"
+                    onClick={() => {
+                      setEditableMarks(currentMarks);
+                      document.getElementById("editMarks").focus();
+                    }}
+                  />
+                </div>
+              </Grid>
+            </Grid>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-  }
+}
