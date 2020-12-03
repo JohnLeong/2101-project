@@ -33,6 +33,8 @@ import { getComponentGradesUrl } from "../routes";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import ComponentManagement from "../Control/ComponentManagement";
+import CommentManagement from "../Control/CommentManagement";
+import Comment from "../Entities/Comment"
 
 const StyledTableSortLabel = withStyles((theme) => ({
     root: {
@@ -229,6 +231,8 @@ export default function ComponentView() {
   const [rows, setRows] = useState([]);
   const [component, setComponent] = useState({});
   const { componentId } = useParams();
+  const [editableComments, setEditableComments] = useState([]);
+  const [targetComments, setTargetComments] = useState(null);
 
   // for add comments popup
   const [commentBody, setCommentBody] = useState("");
@@ -332,6 +336,24 @@ export default function ComponentView() {
     setPage(0);
   };
 
+  const handleSubmitEditComments = async (event) => {
+    event.preventDefault();
+
+    if (submittingAddComment) {
+      return;
+    }
+    
+    //prevent codes from running in between editComment process
+    setSubmittingAddComment(true);
+    
+    editableComments.forEach(async (c) => {
+      await CommentUI.editComment(new Comment(c._id, c.studentId, c.postedBy, c.body));
+    });
+
+    setOpenEditPopup(false);
+    setSubmittingAddComment(false);
+    window.location.reload();
+  }
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -371,6 +393,13 @@ export default function ComponentView() {
   const importChange = async (event) => {
     await ComponentUI.displayFileDialog(event, [submitting, setSubmitting], componentId);
   };
+
+  //Handle edit/view comments
+  const handleDisplayEditComments = (row) => {
+    setTargetComments(row.comments);
+    setEditableComments(JSON.parse(JSON.stringify(row.comments)));
+    setOpenEditPopup(true);
+  }
 
   /****************** RETURN HTML ******************/
   return (
@@ -470,7 +499,7 @@ export default function ComponentView() {
                           </StyledTableCell>
                           <StyledTableCell align="center">
                             <Button
-                              onClick={() => setOpenEditPopup(true)}
+                              onClick={() => handleDisplayEditComments(row)}
                               style={{ backgroundColor: "#C36A33" }}
                               tabIndex="0"
                               type="button"
@@ -604,19 +633,19 @@ export default function ComponentView() {
                   }}
                 />
                 <div>
-                <Controls.Button 
-                  type="submit" 
-                  text="Submit" 
-                  onClick={handleSubmitAddComment}
+                  <Controls.Button
+                    type="submit"
+                    text="Submit"
+                    onClick={handleSubmitAddComment}
                   />
-                  <Controls.Button 
-                  text="Reset" 
-                  color="default"
-                  onClick={(e) => {
-                    setCommentBody();
-                    document.getElementById("commentInput").value=null;
-                    document.getElementById("commentInput").focus();
-                  }}
+                  <Controls.Button
+                    text="Reset"
+                    color="default"
+                    onClick={(e) => {
+                      setCommentBody();
+                      document.getElementById("commentInput").value = null;
+                      document.getElementById("commentInput").focus();
+                    }}
                   />
                 </div>
               </Grid>
@@ -650,36 +679,44 @@ export default function ComponentView() {
           </span>
         </DialogTitle>
         <DialogContent>
-          <Form>
+          <Form  onSubmit={handleSubmitEditComments}>
             <Grid container>
               <Grid item xs={6}>
-                <Controls.InputLarge
-                  name="CommentId"
-                  label="Edit Comments Here"
-                  rows={5}
-                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                />
-                <Controls.InputLarge
-                  name="CommentId"
-                  label="Edit Comments Here"
-                  rows={5}
-                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                />
-                <Controls.InputLarge
-                  name="CommentId"
-                  label="Edit Comments Here"
-                  rows={5}
-                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                />
-                <Controls.InputLarge
-                  name="CommentId"
-                  label="Edit Comments Here"
-                  rows={5}
-                  defaultValue="This is a sample comment placeholder. It will contain the past comments for this student. This is to simulate Lecturer Edit Comments function!!!"
-                />
+                {editableComments.length < 1 ? (
+                  <p>No existing comments</p>
+                ) : (
+                  editableComments.map((c, index) => {
+                    return (
+                      <Controls.InputLarge
+                        name="CommentId"
+                        label={c.datePosted + " - " + (c.commentType ? "Summative" : "Formative")}
+                        rows={5}
+                        value={c.body}
+                        key={c._id}
+                        onChange={(e) => {
+                          let updated = [...editableComments];
+                          updated[index].body = e.target.value;
+                          setEditableComments(updated);
+                        }}
+                      />
+                    );
+                  })
+                )}
                 <div>
-                  <Controls.Button type="submit" text="Submit" />
-                  <Controls.Button text="Reset" color="default" />
+                  {editableComments.length > 0 && (
+                    <Controls.Button type="submit" text="Submit" />
+                  )}
+                  {editableComments.length > 0 && (
+                    <Controls.Button
+                      text="Reset"
+                      color="default"
+                      onClick={() => {
+                        setEditableComments(
+                          JSON.parse(JSON.stringify(targetComments))
+                        );
+                      }}
+                    />
+                  )}
                 </div>
               </Grid>
             </Grid>

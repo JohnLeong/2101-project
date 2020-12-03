@@ -36,8 +36,11 @@ class CommentUI {
         }
     }
 
-    static async editComment() {
-        
+    static async editComment(comment) {
+        if(comment.getId() === "" || comment.getBody() === "") {
+            return ("ERROR!");
+        }
+        await CommentManagement.updateComment(comment);
     }
 }
 

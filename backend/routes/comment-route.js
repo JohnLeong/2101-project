@@ -100,7 +100,7 @@ router
                 comment.studentId = req.body.studentId ?? comment.studentId;
                 comment.postedBy = req.body.postedBy ?? comment.postedBy;
                 comment.body = req.body.body ?? comment.body;
-                comment.datePosted = Date.now();
+                //comment.datePosted = Date.now();
 
                 comment
                     .save()
