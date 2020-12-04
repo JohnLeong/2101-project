@@ -243,6 +243,8 @@ export default function ComponentView() {
   const [submittingEditMarks, setSubmittingEditMarks] = useState(false);
   const [currentMarks, setCurrentMarks] = useState(-1);
   const [editableMarks, setEditableMarks] = useState(-1);
+  const [selectedSubcomponentId, setSelectedSubcomponentId] = useState("");
+  const [selectedStudentId, setSelectedStudentId] = useState("");
 
   React.useEffect(() => {
     console.log("Page loaded!");
@@ -391,19 +393,12 @@ export default function ComponentView() {
 
     //prevent codes from running in between editMarks process
     setSubmittingEditMarks(true);
-
-    // editableComments.forEach(async (c) => {
-    //   await CommentUI.editComment(new Comment(c._id, c.studentId, c.postedBy, c.body));
-    // });
-
-    //await SubComponentManagement.updateStudentMarks();
-
-    console.log("PROCESSING EDIT MARKS");
-    console.log(editableMarks);
+    
+    await SubComponentManagement.updateStudentMarks(selectedSubcomponentId, selectedStudentId, editableMarks);
 
     setOpenEditMarksPopup(false);
     setSubmittingEditMarks(false);
-    //window.location.reload();
+    window.location.reload();
   }
 
   /****************** IMPORT MARKS ******************/
@@ -433,19 +428,11 @@ export default function ComponentView() {
 
   // handle edit marks
   const handleDisplayEditMarks = (selectedScRow, selectedRow) => {
-    console.log(selectedScRow);
     setEditableMarks(selectedScRow.marks);
     setCurrentMarks(selectedScRow.marks);
+    setSelectedSubcomponentId(selectedScRow.sc_id);
+    setSelectedStudentId(selectedRow._id);
     setOpenEditMarksPopup(true);
-
-    console.log(selectedRow);
-
-    //studentId
-    console.log(selectedRow._id);
-    //studentMarks
-    console.log(selectedScRow.marks);
-    //subcomponent id
-    console.log(selectedScRow.sc_id);
   }
 
   /****************** RETURN HTML ******************/

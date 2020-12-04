@@ -88,15 +88,21 @@ class SubComponentManagement {
         return null;
     }
 
-    static async updateStudentMarks(subcomponent) {
-        await fetch(updateStudentMarksUrl + subcomponent.getId(), {
+    static async updateStudentMarks(subcomponentId, studentId, newStudentMarks) {
+        let studentIdToMarks = {};
+        studentIdToMarks[studentId] = newStudentMarks;
+
+        console.log(subcomponentId);
+        console.log(studentIdToMarks);
+
+        await fetch(updateStudentMarksUrl + subcomponentId, {
             method: "PUT",
             headers: {
                 Authorization: "Bearer " + Cookies.get("token"),
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                studentMarks: "", //user_studentObjectid: marks
+                studentMarks: studentIdToMarks, //user_studentObjectid: marks
             }),
         });
     }
