@@ -80,12 +80,39 @@ class SubComponentManagement {
         return new SubComponent(data._id, data.name, data.weightage, data.studentMarks);
     }
 
-    static async calculateGrade(subcomponent) {
-        return null;
+    static async calculateGrade(subcomponent, studentId) {
+        const marksPercentage = subcomponent.studentMarks[studentId];
+        let grade;
+        if (marksPercentage >= 84)
+          grade = 'A';
+        else if (marksPercentage >= 67)
+          grade = 'B';
+        else if (marksPercentage >= 57)
+          grade = 'C';
+        else if (marksPercentage >= 47)
+          grade = 'D';
+        else if (marksPercentage >= 37)
+          grade = 'E';
+        else
+          grade = 'F';
+    
+        return grade;
     }
 
-    static async getStudentMarks() {
-        return null;
+    static async getStudentMarks(subcomponent, studentId) {
+        let data;
+        await fetch(getSubComponentUrl + subcomponent.getId(),{
+            method: "GET",
+            headers: {
+                Authorization:
+                "Bearer " + Cookies.get('token'),
+                "Content-Type": "application/json",
+            },
+        })
+        .then((result) => result.json())
+        .then((json) => (data = json));
+
+        return data.studentMarks[studentId];
     }
 
     static async updateStudentMarks(subcomponentId, studentId, newStudentMarks) {

@@ -56,7 +56,7 @@ class ComponentUI {
     }
 
     static async displayEditMarksForm() {
-
+        return true;
     }
 }
 
