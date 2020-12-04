@@ -131,14 +131,6 @@ export const LoginPage = () => {
           >
             Sign In
           </Button>
-          <p>All account passwords are password123</p>
-          <p>Lecturer</p>
-          <p>julianntacy@sit.singaporetech.edu.sg</p>
-          <p>roscoeagosta@sit.singaporetech.edu.sg</p>
-          <p>Student</p>
-          <p>carmelacallicoat@sit.singaporetech.edu.sg</p>
-          <p>darylvittetoe@sit.singaporetech.edu.sg</p>
-          <p>susannahmcgibbon@sit.singaporetech.edu.sg</p>
         </form>
       </div>
     </Container>

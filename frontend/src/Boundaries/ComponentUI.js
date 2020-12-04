@@ -48,6 +48,8 @@ class ComponentUI {
                     setSubmitting(false);
                 }
                 console.log(results);
+                alert(results);
+                window.location.reload();
                 return results;
             }
         });
