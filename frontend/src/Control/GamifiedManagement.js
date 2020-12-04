@@ -1,3 +1,4 @@
+import CommentManagement from "./CommentManagement";
 import ComponentManagement from "./ComponentManagement";
 import SubComponentManagement from "./SubComponentManagement";
 
@@ -10,8 +11,8 @@ class GamifiedManagement {
         return await SubComponentManagement.getAllSubComponents();
     }
 
-    static async getCommentsInfo() {
-        
+    static async getCommentsInfo(componentId) {
+        return await CommentManagement.getComponentComments(componentId);
     }
 }
 

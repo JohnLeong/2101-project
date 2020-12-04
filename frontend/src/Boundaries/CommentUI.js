@@ -3,7 +3,7 @@ import CommentManagement from "../Control/CommentManagement.js"
 
 class CommentUI {
     static async displayComments() {
-
+        return true;
     }
 
     static async addComment(componentId,studentIds,lectureId,commentBody) {
