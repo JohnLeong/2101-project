@@ -33,7 +33,7 @@ import { getComponentGradesUrl } from "../routes";
 import { useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import ComponentManagement from "../Control/ComponentManagement";
-import CommentManagement from "../Control/CommentManagement";
+import SubComponentManagement from "../Control/SubComponentManagement";
 import Comment from "../Entities/Comment"
 
 const StyledTableSortLabel = withStyles((theme) => ({
@@ -396,6 +396,8 @@ export default function ComponentView() {
     //   await CommentUI.editComment(new Comment(c._id, c.studentId, c.postedBy, c.body));
     // });
 
+    //await SubComponentManagement.updateStudentMarks();
+
     console.log("PROCESSING EDIT MARKS");
     console.log(editableMarks);
 
@@ -430,12 +432,20 @@ export default function ComponentView() {
   }
 
   // handle edit marks
-  const handleDisplayEditMarks = (rowMarks) => {
-    setEditableMarks(rowMarks);
-    setCurrentMarks(rowMarks);
+  const handleDisplayEditMarks = (selectedScRow, selectedRow) => {
+    console.log(selectedScRow);
+    setEditableMarks(selectedScRow.marks);
+    setCurrentMarks(selectedScRow.marks);
     setOpenEditMarksPopup(true);
 
-    console.log(rowMarks);
+    console.log(selectedRow);
+
+    //studentId
+    console.log(selectedRow._id);
+    //studentMarks
+    console.log(selectedScRow.marks);
+    //subcomponent id
+    console.log(selectedScRow.sc_id);
   }
 
   /****************** RETURN HTML ******************/
@@ -599,7 +609,7 @@ export default function ComponentView() {
                                             style={{ cursor: "pointer" }}
                                           >
                                             <EditIcon
-                                              onClick={() => handleDisplayEditMarks(scRow.marks)}
+                                              onClick={() => handleDisplayEditMarks(scRow, row)}
                                             />
                                           </TableCell>
                                         </TableRow>

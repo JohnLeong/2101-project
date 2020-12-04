@@ -85,9 +85,9 @@ router
           const marks = sc.studentMarks.get(s._id.toString());
           if (typeof marks !== "undefined") {
             totalMarks += marks * sc.weightage;
-            subcomponentResults.push({sc: sc.name, marks: marks});
+            subcomponentResults.push({sc_id: sc._id, sc: sc.name, marks: marks});
           } else {
-            subcomponentResults.push({sc: sc.name, marks: 0});
+            subcomponentResults.push({sc_id: sc._id, sc: sc.name, marks: 0});
           }
         });
 
@@ -107,7 +107,7 @@ router
           }
         });
 
-        //studentID, classgroup,  name, grade, comment, subcomponent: [{sc: s, marks: m}],
+        //studentID, classgroup,  name, grade, comment, subcomponent: [{sc_id: s_id, sc: s, marks: m}],
         studentResults.push({_id: s.id, studentID: s.email, classgroup: moduleClass.name, name: s.name, grade: grade, comments: commentResults, subcomponents: subcomponentResults});
       });
     });
